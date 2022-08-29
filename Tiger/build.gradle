@@ -37,6 +37,8 @@ dependencies {
     // implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+    implementation 'org.springframework:spring-aop'
+
 }
 
 // querydsl에서 사용할 경로 설정
