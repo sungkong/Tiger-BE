@@ -29,6 +29,7 @@ public class MemberController {
     @ApiOperation(value = "로그인", notes = "로그인하기")
     public ResponseEntity<?> login(@PathVariable Long memberId){
         LOGGER.info("info log={}", memberId);
+        
         return ResponseEntity.ok().body(memberId);
     }
 }
