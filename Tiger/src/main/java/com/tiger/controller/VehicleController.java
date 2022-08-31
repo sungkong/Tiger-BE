@@ -62,6 +62,20 @@ public class VehicleController {
         return ResponseEntity.ok(vehicleList);
     }
 
+    // 상품 수정 페이지 (오너 마이페이지)
+
+
+    // 상품 수정
+    @PutMapping("/management/{vId}")
+    public ResponseEntity<?> update(@PathVariable Long vId, @RequestBody VehicleRequestDto requestDto) {
+
+        Vehicle vehicle = vehicleService.update(vId, requestDto);
+
+        return ResponseEntity.ok(vehicle);
+    }
+
+
+
 
     /* 상품 검색
     @GetMapping

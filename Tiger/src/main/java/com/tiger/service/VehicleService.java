@@ -58,6 +58,14 @@ public class VehicleService {
         return vehicleRepository.findAllByOwnerIdOrderByCreatedAtDesc(ownerId).orElseThrow(()-> new IllegalArgumentException("유효하지 않은 오너 식별번호입니다."));
     }
 
+    // 상품 수정
+    public Vehicle update(Long vId, VehicleRequestDto requestDto) {
+
+        Vehicle vehicle = VehicleService.this.readOne(vId);
+
+        return vehicle.update(requestDto);
+    }
+
     /* 상품 검색
     public List<Vehicle> search(VehicleSearch vehicleSearch) {
         String location = vehicleSearch.getLocation();

@@ -2,6 +2,7 @@ package com.tiger.domain.vehicle;
 
 
 import com.tiger.domain.Timestamped;
+import com.tiger.domain.vehicle.dto.VehicleRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +25,7 @@ public class Vehicle extends Timestamped {
     private Long id;
 
     // 상품 주인
-    @Column(name = "owner_id", nullable = false)
+    @Column(nullable = false)
     private Long ownerId;
 
     // 상품 가격
@@ -73,6 +74,21 @@ public class Vehicle extends Timestamped {
     // 차 연비
     @Column(nullable = false)
     private String fuelEfficiency;
+
+    public Vehicle update(VehicleRequestDto requestDto) {
+        this.ownerId = requestDto.getOwnerId();
+        this.price = requestDto.getPrice();
+        this.description = requestDto.getDescription();
+        this.address = requestDto.getAddress();
+        this.name = requestDto.getName();
+        this.type = requestDto.getType();
+        this.years = requestDto.getYears();
+        this.fuelType = requestDto.getFuelType();
+        this.transType = requestDto.getTransType();
+        this.fuelEfficiency = requestDto.getFuelEfficiency();
+
+        return this;
+    }
 
     // OpenDate 테이블과 연관관계
 
