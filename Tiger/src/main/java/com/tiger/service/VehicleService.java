@@ -21,7 +21,7 @@ public class VehicleService {
     public Vehicle create(VehicleRequestDto requestDto) {
 
         Vehicle vehicle = Vehicle.builder()
-                .owner(requestDto.getOwner())
+                .ownerId(requestDto.getOwnerId())
                 .price(requestDto.getPrice())
                 .description(requestDto.getDescription())
                 .address(requestDto.getAddress())
@@ -50,6 +50,12 @@ public class VehicleService {
 
         return vehicleRepository.findById(vId).
                 orElseThrow(()-> new IllegalArgumentException("유효하지 않은 상품 식별번호입니다."));
+    }
+
+    // 등록한 상품 조회
+    public List<Vehicle> readAllByOwnerId(Long ownerId) {
+
+        return vehicleRepository.findAllByOwnerIdOrderByCreatedAtDesc(ownerId).orElseThrow(()-> new IllegalArgumentException("유효하지 않은 오너 식별번호입니다."));
     }
 
     /* 상품 검색

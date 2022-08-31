@@ -8,7 +8,7 @@ import lombok.Setter;
 public class VehicleRequestDto {
 
     // 상품 주인
-    private String owner;
+    private Long ownerId;
 
     // 상품 가격
     private Integer price;

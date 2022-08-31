@@ -24,8 +24,8 @@ public class Vehicle extends Timestamped {
     private Long id;
 
     // 상품 주인
-    @Column(nullable = false)
-    private String owner;
+    @Column(name = "owner_id", nullable = false)
+    private Long ownerId;
 
     // 상품 가격
     @Column(nullable = false)
@@ -75,5 +75,7 @@ public class Vehicle extends Timestamped {
     private String fuelEfficiency;
 
     // OpenDate 테이블과 연관관계
+
+    // Order????
 
 }
