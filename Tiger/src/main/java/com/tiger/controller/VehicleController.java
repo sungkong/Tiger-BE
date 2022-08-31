@@ -67,6 +67,7 @@ public class VehicleController {
 
     // 상품 수정
     @PutMapping("/management/{vId}")
+    @ApiOperation(value = "상품 수정", notes = "오너 모드 마이페이지에서 사용")
     public ResponseEntity<?> update(@PathVariable Long vId, @RequestBody VehicleRequestDto requestDto) {
 
         Vehicle vehicle = vehicleService.update(vId, requestDto);
@@ -74,7 +75,15 @@ public class VehicleController {
         return ResponseEntity.ok(vehicle);
     }
 
+    // 상품 삭제
+    @DeleteMapping("/management/{vId}")
+    @ApiOperation(value = "상품 수정", notes = "오너 모드 마이페이지에서 사용")
+    public ResponseEntity<?> delete(@PathVariable Long vId) {
 
+        Vehicle vehicle = vehicleService.delete(vId);
+
+        return ResponseEntity.ok(vehicle);
+    }
 
 
     /* 상품 검색

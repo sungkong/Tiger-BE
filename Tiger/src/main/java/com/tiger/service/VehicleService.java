@@ -66,6 +66,13 @@ public class VehicleService {
         return vehicle.update(requestDto);
     }
 
+    public Vehicle delete(Long vId) {
+
+        Vehicle vehicle = VehicleService.this.readOne(vId);
+
+        return vehicle.delete();
+    }
+
     /* 상품 검색
     public List<Vehicle> search(VehicleSearch vehicleSearch) {
         String location = vehicleSearch.getLocation();

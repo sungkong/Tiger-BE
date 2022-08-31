@@ -90,6 +90,12 @@ public class Vehicle extends Timestamped {
         return this;
     }
 
+    public Vehicle delete() {
+        this.isValid = false;
+
+        return this;
+    }
+
     // OpenDate 테이블과 연관관계
 
     // Order????
