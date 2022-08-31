@@ -41,24 +41,25 @@ public class VehicleService {
     // 종류별 상품 조회
     public List<Vehicle> readAllByType(String type) {
 
-        return vehicleRepository.findAllByTypeOrderByModifiedAtDesc(type);
+        return vehicleRepository.findAllByTypeAndIsValidOrderByModifiedAtDesc(type, true).orElseThrow(()-> new IllegalArgumentException("유효하지 않은 차종입니다."));
 
     }
 
     // 상세 상세 조회
     public Vehicle readOne(Long vId) {
 
-        return vehicleRepository.findById(vId).
+        return vehicleRepository.findByIdAndIsValid(vId, true).
                 orElseThrow(()-> new IllegalArgumentException("유효하지 않은 상품 식별번호입니다."));
     }
 
     // 등록한 상품 조회
     public List<Vehicle> readAllByOwnerId(Long ownerId) {
 
-        return vehicleRepository.findAllByOwnerIdOrderByCreatedAtDesc(ownerId).orElseThrow(()-> new IllegalArgumentException("유효하지 않은 오너 식별번호입니다."));
+        return vehicleRepository.findAllByOwnerIdAndIsValidOrderByCreatedAtDesc(ownerId, true).orElseThrow(()-> new IllegalArgumentException("유효하지 않은 오너 식별번호입니다."));
     }
 
     // 상품 수정
+    @Transactional
     public Vehicle update(Long vId, VehicleRequestDto requestDto) {
 
         Vehicle vehicle = VehicleService.this.readOne(vId);
@@ -66,6 +67,8 @@ public class VehicleService {
         return vehicle.update(requestDto);
     }
 
+    // 상품 삭제
+    @Transactional
     public Vehicle delete(Long vId) {
 
         Vehicle vehicle = VehicleService.this.readOne(vId);
