@@ -16,6 +16,7 @@ public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
 
+    // 상품 등록
     @Transactional
     public Vehicle create(VehicleRequestDto requestDto) {
 
@@ -37,23 +38,31 @@ public class VehicleService {
         return vehicleRepository.save(vehicle);
     }
 
+    // 종류별 상품 조회
     public List<Vehicle> readAllByType(String type) {
 
         return vehicleRepository.findAllByTypeOrderByModifiedAtDesc(type);
 
     }
 
+    // 상세 상세 조회
+    public Vehicle readOne(Long vId) {
 
-//    public List<Vehicle> search(VehicleSearch vehicleSearch) {
-//        String location = vehicleSearch.getLocation();
-//        String startDate = vehicleSearch.getStartDate();
-//        String endDate = vehicleSearch.getEndDate();
-//        String type = vehicleSearch.getType();
-//
-//        vehicleRepository.findAllByLocationAndStartDateAntEndDateAndType(location, startDate, endDate, type);
-//
-//    }
+        return vehicleRepository.findById(vId).
+                orElseThrow(()-> new IllegalArgumentException("유효하지 않은 상품 식별번호입니다."));
+    }
 
+    /* 상품 검색
+    public List<Vehicle> search(VehicleSearch vehicleSearch) {
+        String location = vehicleSearch.getLocation();
+        String startDate = vehicleSearch.getStartDate();
+        String endDate = vehicleSearch.getEndDate();
+        String type = vehicleSearch.getType();
+
+        vehicleRepository.findAllByLocationAndStartDateAntEndDateAndType(location, startDate, endDate, type);
+
+    }
+    */
 
 
 

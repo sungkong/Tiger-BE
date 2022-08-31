@@ -40,6 +40,14 @@ public class VehicleController {
         return ResponseEntity.ok(vehicleList);
     }
 
+    // 상품 상세 조회
+    @GetMapping("/{vId}")
+    public ResponseEntity<?> readOne(@PathVariable Long vId) {
+
+        Vehicle vehicle = vehicleService.readOne(vId);
+
+        return ResponseEntity.ok(vehicle);
+    }
 
 
     /* 상품 검색
