@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RequestMapping("/api/member")
 @RestController
 @Api(tags = "[멤버 컨트롤러]")

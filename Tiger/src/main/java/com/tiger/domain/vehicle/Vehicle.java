@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -71,5 +73,7 @@ public class Vehicle extends Timestamped {
     // 차 연비
     @Column(nullable = false)
     private String fuelEfficiency;
+
+    // OpenDate 테이블과 연관관계
 
 }
