@@ -80,7 +80,7 @@ public class OrderService {
     public ResponseEntity<?> refund(HttpServletRequest request, Long orderId) {
 
         // 주문 번호 존재 검증
-        Orders order = checkUtil.validateOrder(orderId);
+        //Orders order = checkUtil.validateOrder(orderId);
         // 로그인 유저가 주문한 것인지 확인하는 검증
         // 환불 가능한 상태 검증
         // 정산 계좌(bank) 에서 돈 입출이 가능한지 검증

@@ -1,13 +1,30 @@
 package com.tiger.domain.member;
 
 import io.swagger.annotations.ApiParam;
-import lombok.Data;
+import lombok.*;
 
-@Data
+import javax.persistence.*;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Entity
 public class Member {
 
-    @ApiParam(value = "사용자 이름", required = false, example = "홍길동")
-    private String name;
-    @ApiParam(value = "사용자 이메일", required = false, example = "aaa@naver.com")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
+    private boolean is_valid;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String tel;
 }
