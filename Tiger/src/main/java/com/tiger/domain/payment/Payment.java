@@ -1,6 +1,6 @@
 package com.tiger.domain.payment;
 
-import com.tiger.domain.TimeStamped;
+import com.tiger.domain.Timestamped;
 import com.tiger.domain.order.Orders;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Entity
-public class Payment extends TimeStamped {
+public class Payment extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

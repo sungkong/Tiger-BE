@@ -1,6 +1,6 @@
 package com.tiger.domain.payout;
 
-import com.tiger.domain.TimeStamped;
+import com.tiger.domain.Timestamped;
 import com.tiger.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Entity
-public class Payout extends TimeStamped {
+public class Payout extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
