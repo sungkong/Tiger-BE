@@ -21,14 +21,14 @@ public class Payment extends Timestamped {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Orders orders; // 주문
+    private Orders order; // 주문
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private PayMethod pay_method; // 결제수단
+    private PayMethod payMethod; // 결제수단
 
     @Column(nullable = false)
-    private int paid_amount; // 결제 금액
+    private int paidAmount; // 결제 금액
 
 
 }

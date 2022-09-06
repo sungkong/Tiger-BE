@@ -1,7 +1,9 @@
 package com.tiger.domain.vehicle;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tiger.domain.Timestamped;
+import com.tiger.domain.order.Orders;
 import com.tiger.domain.vehicle.dto.VehicleRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -73,6 +77,9 @@ public class Vehicle extends Timestamped {
     @Column(nullable = false)
     private String fuelEfficiency;
 
+    // 썸네일
+    private String thumbnail;
+
     public Vehicle update(VehicleRequestDto requestDto) {
         this.ownerId = requestDto.getOwnerId();
         this.price = requestDto.getPrice();
@@ -96,6 +103,8 @@ public class Vehicle extends Timestamped {
 
     // OpenDate 테이블과 연관관계
 
-    // Order????
+    // 주문목록
+    @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY)
+    private List<Orders> orders;
 
 }

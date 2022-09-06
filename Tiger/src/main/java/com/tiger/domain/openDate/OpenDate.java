@@ -26,8 +26,8 @@ public class OpenDate {
     private Long vehicleId; // 상품 식별번호
 
     @Column(nullable = false)
-    private LocalDate start_date; // 시작 날짜
+    private LocalDate startDate; // 시작 날짜
 
     @Column(nullable = false)
-    private LocalDate end_date; // 시작 날짜
+    private LocalDate endDate; // 시작 날짜
 }

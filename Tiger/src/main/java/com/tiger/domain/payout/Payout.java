@@ -25,7 +25,7 @@ public class Payout extends Timestamped {
     private Member member; //
 
     @Column(nullable = false)
-    private LocalDateTime payment_date; // 지급 날짜
+    private LocalDateTime paymentDate; // 지급 날짜
 
     @Column(nullable = false)
     private int fee; // 수수료

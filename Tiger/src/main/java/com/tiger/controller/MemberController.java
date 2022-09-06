@@ -2,14 +2,14 @@ package com.tiger.controller;
 
 
 import com.tiger.domain.member.Member;
+import com.tiger.domain.CommonResponseDto;
+import com.tiger.exception.StatusCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RequestMapping("/api/member")
 @RestController
@@ -32,4 +32,5 @@ public class MemberController {
         
         return ResponseEntity.ok().body(memberId);
     }
+
 }

@@ -20,7 +20,7 @@ public class Member {
     private String email;
 
     @Column(nullable = false)
-    private boolean is_valid;
+    private boolean isValid;
 
     @Column(nullable = false)
     private String name;
