@@ -39,6 +39,9 @@ dependencies {
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
     implementation 'org.springframework:spring-aop'
 
+    // 쿼리문 로그 찍기
+    implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0")
+
 }
 
 // querydsl에서 사용할 경로 설정
