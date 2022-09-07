@@ -106,21 +106,23 @@ class OrderServiceTest {
     }
 
 //    @Test
-//    @DisplayName("조기 반납인 경우 남은 기간 재오픈")
+//    @DisplayName("사용기간 재오픈[환불]")
 //    void reOpenDate(){
 //
-//       // given
-//        LocalDate now = LocalDate.now();
-//        Orders order = checkUtil.validateOrder(1l);
-//        OpenDate openDate = null;
-//        //when
-//        if(order.getStartDate().isBefore(now) && now.isBefore(order.getEndDate())){
-//            openDate = OpenDate.builder()
-//                    .vehicleId(order.getVehicle().getId())
-//                    .startDate(now.plusDays(1))
-//
+//        // given
+//        Long start
+//        // when
+//        Status status = null;
+//        try {
+//            status = Status.valueOf("RESERVED");
+//        } catch (IllegalArgumentException e) {
+//            System.out.println(e.getMessage());
 //        }
+//        List<Orders> orderList = orderRepository.getOrderList(memberId, "RESERVED", 3, 0).orElse(null);
 //        //then
+//        assertThat(orderList.size()).isEqualTo(3);
 //    }
+
+
 
 }

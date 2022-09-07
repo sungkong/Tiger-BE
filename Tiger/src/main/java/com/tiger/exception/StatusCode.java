@@ -37,10 +37,12 @@ public enum StatusCode {
     REFUND_ELIGIBILITY_NOT_FOUND(HttpStatus.NOT_FOUND, "환불을 할 수 없습니다."),
     BANK_NOT_FOUND(HttpStatus.NOT_FOUND, "계좌를 찾을 수 없습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제수단을 찾을 수 없습니다."),
+    OPENDATE_NOT_FOUND(HttpStatus.NOT_FOUND, "사용기간이 존재하지 않는 상품입니다."),
 
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
+    DUPLICATE_ORDERDATE(HttpStatus.CONFLICT, "이미 사용중인 상품이거나 사용할 수 없는 상품입니다."),
 
 
     ;

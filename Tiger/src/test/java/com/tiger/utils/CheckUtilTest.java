@@ -14,10 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import static com.tiger.exception.StatusCode.OPENDATE_NOT_FOUND;
 import static com.tiger.exception.StatusCode.PRICE_NOT_FOUND;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,16 +72,64 @@ class CheckUtilTest {
     @DisplayName("예약 기간 검증")
     void validatePeriod(){
 
+        // given
+
+        HttpServletRequest request = null;
+        Long vehicleId = 3l;
+
+        String imp_uid = "0011"; // 가맹점에서 생성/관리하는 고유 주문번호
+        String pay_method = PayMethod.CARD.toString(); // 결제 수단
+        int paid_amount = 20000; // 결제 금액
+        LocalDate start_date = LocalDate.parse("2022-09-20"); // 시작 날짜
+        LocalDate end_date = LocalDate.parse("2022-10-05"); // 종료 날짜
+        OrderRequestDto orderRequestDto = new OrderRequestDto(
+                imp_uid, pay_method, paid_amount, start_date, end_date);
+        boolean flag = true;
+
         // 상품의 오픈 기간인지 체크
-        List<OpenDate> allByVehicleId = openDateRepository.findAllByVehicleId(1L).get();
-        for (OpenDate openDate : allByVehicleId) {
-            System.out.println(openDate);
+        // 10.1~10.5 , 10.11~10.15
+//        List<OpenDate> openDateList = openDateRepository.findAllByVehicleIdOrderByStartDate(vehicleId).orElseThrow(
+//                () -> new CustomException(OPENDATE_NOT_FOUND)
+//        );
+        List<OpenDate> openDateList = openDateRepository.findAllByIncludeOrderDateMonth(vehicleId,
+                orderRequestDto.getStartDate(),
+                orderRequestDto.getEndDate()).orElseThrow(
+                () -> new CustomException(OPENDATE_NOT_FOUND)
+        );
+        Set<LocalDate> openDateSet = new HashSet<>();
+        for (OpenDate openDate : openDateList) {
+            LocalDate startDate = openDate.getStartDate();
+            openDateSet.add(openDate.getStartDate());
+            int i=0;
+            //System.out.println("size = "+size);
+            while (i<=openDate.getEndDate().compareTo(openDate.getStartDate())){
+                openDateSet.add(startDate.plusDays(i++));
+            }
         }
-        // 주문 리스트에서 검증
-       // List<Orders> ordersList = orderRepository.findAllByVehicleId(1L).get();
 
-
-        //Vehicle vehicle = vehicleRepository.findByIdAndIsValid(1L, true).get();
+        // 오픈 기간에서 이미 사용중인 기간 제외하기
+        List<Orders> ordersList = orderRepository.findAllByVehicleId(vehicleId).orElse(null);
+        for (Orders order : ordersList) {
+            int j=0;
+            int size = order.getEndDate().compareTo(order.getStartDate());
+            while (j<=size){
+                openDateSet.remove(order.getStartDate().plusDays(j++));
+            }
+        }
+        // 검증
+        int k=0;
+        while(k <= orderRequestDto.getEndDate().compareTo(orderRequestDto.getStartDate())){
+            if(!openDateSet.contains(orderRequestDto.getStartDate().plusDays(k++))){
+                flag = false;
+                break;
+            }
+        }
+        for(LocalDate date : openDateSet){
+            System.out.println("예약 가능 날짜 = " + date);
+        }
+        //assertThat(openDateSet.size()).isEqualTo(32);
+        assertThat(flag).isFalse();
+        //assertThat(flag).isTrue();
 
     }
 

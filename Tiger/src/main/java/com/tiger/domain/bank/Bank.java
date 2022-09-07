@@ -25,9 +25,8 @@ public class Bank {
     private Long money; // 잔고
 
     //입금
-    @Transactional
-    public void deposit(Long money){
-        this.money += money;
+    public void deposit(Long price){
+        this.money += price;
     }
 
     //출금
@@ -36,7 +35,7 @@ public class Bank {
         if(this.money - price < 0){
             throw new CustomException(StatusCode.EXCESS_AMOUNT_BANK);
         }
-        this.money -= money;
+        this.money -= price;
     }
 
 }

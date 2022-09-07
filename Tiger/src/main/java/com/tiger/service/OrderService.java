@@ -49,11 +49,11 @@ public class OrderService {
         // 상품 검증
         Vehicle vehicle = checkUtil.validateVehicle(vehicleId);
         // 예약 기간 검증
-
+        checkUtil.validateOrderDate(vehicleId, orderRequestDto);
         // 주문 금액 검증
         checkUtil.validatePrice(orderRequestDto, vehicle);
         // Dto -> Domain
-        Orders orders = Orders.builder()
+        Orders order = Orders.builder()
                 .member(member)
                 .startDate(orderRequestDto.getStartDate())
                 .endDate(orderRequestDto.getEndDate())
@@ -62,7 +62,8 @@ public class OrderService {
                 .build();
 
 
-        Long order_id = orderRepository.save(orders).getId();
+        Long order_id = orderRepository.save(order).getId();
+
         if(order_id == null){
             return CommonResponseDto.fail(ORDER_NOT_FOUND);
         } else {
@@ -74,10 +75,12 @@ public class OrderService {
             }
 
             paymentRepository.save(Payment.builder()
-                    .order(orders)
+                    .order(order)
                     .paidAmount(orderRequestDto.getPaidAmount())
                     .payMethod(payMethod)
                     .build());
+            Bank bank = checkUtil.validateBank(order);
+            bank.deposit((long) orderRequestDto.getPaidAmount());
             return CommonResponseDto.success(ORDER_SUCCESS, null);
         }
     }
@@ -105,14 +108,12 @@ public class OrderService {
     @Transactional
     public CommonResponseDto<?> refund(HttpServletRequest request, Long orderId) {
 
-        // 주문 번호 존재 검증
         Orders order = checkUtil.validateOrder(orderId);
-        // 로그인 유저가 주문한 것인지 확인하는 검증
         Member member = checkUtil.validateMember(1l);
+        // 주문 번호 존재 검증
+        // 로그인 유저가 주문한 것인지 확인하는 검증
         checkUtil.validateOwner(member, order);
         // 환불 가능한 상태 검증
-        checkUtil.validateReturn(order);
-        // 정산 계좌(bank) 에서 돈 입출이 가능한지 검증
         List<Payment> payments = paymentRepository.findAllByOrderId(order.getId()).orElseThrow(
                 () -> new CustomException(PAYMENT_NOT_FOUND)
         );
@@ -126,17 +127,22 @@ public class OrderService {
         if(bank.getMoney() - price < 0){
             throw new CustomException(EXCESS_AMOUNT_BANK);
         }
+
+        LocalDate now = LocalDate.now();
+        if(now.compareTo(order.getStartDate()) <= 0 || !order.getStatus().equals("RESERVED")){
+            throw new CustomException(REFUND_ELIGIBILITY_NOT_FOUND);
+        }
         // Bank에서 돈 빠져나감
         bank.withdraw(price);
         // Orders 환불 상태로 변경
         order.setStatus(Status.CANCLE);
-        // 상품 사용기간 재오픈
-
+        // 상품 사용기간 재오픈(필요한가?)
         return CommonResponseDto.success(CANCLE_SUCCESS, null);
     }
 
     // 반납 확인
-    public CommonResponseDto<?> returnCheck(HttpServletRequest request, Long orderId){
+    public CommonResponseDto<?> returnVehicle(HttpServletRequest request, Long orderId){
+
 
         // 주문 번호 존재 검증
         Orders order = checkUtil.validateOrder(orderId);
