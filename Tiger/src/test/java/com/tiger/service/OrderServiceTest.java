@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,7 +52,7 @@ class OrderServiceTest {
     private OpenDateRepository openDateRepository;
 
     @Test
-    @DisplayName("주문 목록 생성하기")
+    @DisplayName("주문하기")
     void createOrder(){
 
 
@@ -59,18 +60,18 @@ class OrderServiceTest {
         HttpServletRequest request = null;
         Long vehicleId = 2l;
 
-        String imp_uid = "0002"; // 가맹점에서 생성/관리하는 고유 주문번호
+        String imp_uid = "0000"; // 가맹점에서 생성/관리하는 고유 주문번호
         String pay_method = PayMethod.CARD.toString(); // 결제 수단
-        int paid_amount = 10000; // 결제 금액
-        LocalDate start_date = LocalDate.parse("2022-09-04"); // 시작 날짜
-        LocalDate end_date = LocalDate.parse("2022-09-13"); // 종료 날짜
+        int paid_amount = 4000; // 결제 금액
+        LocalDate start_date = LocalDate.parse("2022-10-26"); // 시작 날짜
+        LocalDate end_date = LocalDate.parse("2022-10-27"); // 종료 날짜
         OrderRequestDto orderRequestDto = new OrderRequestDto(
                 imp_uid, pay_method, paid_amount, start_date, end_date);
 
         //when
         CommonResponseDto<?> result = orderService.order(request, vehicleId, orderRequestDto);
         //then
-        assertThat(result.getStatus()).isEqualTo(HttpStatus.OK.toString());
+        assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
