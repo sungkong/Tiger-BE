@@ -1,9 +1,12 @@
 package com.tiger.domain.member;
 
+import com.tiger.domain.order.Orders;
+import com.tiger.domain.vehicle.Vehicle;
 import io.swagger.annotations.ApiParam;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -27,4 +30,5 @@ public class Member {
 
     @Column(nullable = false)
     private String tel;
+
 }

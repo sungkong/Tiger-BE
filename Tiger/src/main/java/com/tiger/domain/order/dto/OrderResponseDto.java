@@ -1,5 +1,6 @@
 package com.tiger.domain.order.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import com.tiger.domain.order.Orders;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class OrderResponseDto {
 
@@ -23,11 +23,24 @@ public class OrderResponseDto {
     private LocalDate endDate; // 종료 날짜
     private LocalDateTime createdAt; // 등록 날짜
 
+    @QueryProjection
+    public OrderResponseDto(Long oid, Long vid, String vname, int price, String thumbnail, String location, LocalDate startDate, LocalDate endDate, LocalDateTime createdAt) {
+        this.oid = oid;
+        this.vid = vid;
+        this.vname = vname;
+        this.price = price;
+        this.thumbnail = thumbnail;
+        this.location = location;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.createdAt = createdAt;
+    }
+
     public OrderResponseDto(Orders orders){
         this.oid = orders.getId();
         this.vid = orders.getVehicle().getId();
         this.vname = orders.getVehicle().getName();
-        this.price = orders.getVehicle().getPrice();
+        this.price = orders.getTotalAmount();
         this.thumbnail = orders.getVehicle().getThumbnail();
         this.location = orders.getVehicle().getAddress();
         this.startDate = orders.getStartDate();

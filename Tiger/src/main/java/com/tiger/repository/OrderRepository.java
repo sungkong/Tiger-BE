@@ -16,7 +16,8 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
 
     Optional<List<Orders>> findAllByVehicleId(long vehicleId);
 
-    // 판매리스트 (오너)
+    // N+1문제 발생
+    // 주문리스트 (렌터)
     @Query(value =  "SELECT * " +
                     "FROM orders " +
                     "WHERE member_id = :memberId " +
@@ -27,4 +28,7 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
                                              @Param("status") String status,
                                              @Param("limit") int limit,
                                              @Param("offset") int offset);
+
+
+
 }

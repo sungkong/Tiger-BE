@@ -104,7 +104,7 @@ public class Vehicle extends Timestamped {
     // OpenDate 테이블과 연관관계
 
     // 주문목록
-    @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Orders> orders;
 
 }

@@ -61,7 +61,6 @@ public class OrderService {
                 .vehicle(vehicle)
                 .build();
 
-
         Long order_id = orderRepository.save(order).getId();
 
         if(order_id == null){
@@ -141,6 +140,7 @@ public class OrderService {
     }
 
     // 반납 확인
+    @Transactional
     public CommonResponseDto<?> returnVehicle(HttpServletRequest request, Long orderId){
 
 
@@ -152,7 +152,7 @@ public class OrderService {
         // 조기 반납인 경우 남은 기간 재오픈
 
         // 반납완료로 상태 변경하기
-        order.setStatus(Status.RETURN);
+        order.setReturn();
         return CommonResponseDto.success(RETURN_SUCCESS, null);
     }
 
@@ -164,9 +164,8 @@ public class OrderService {
         * 렌터와 코드는 똑같으나, 추후 렌터의 주문리스트와 오너의 주문리스트에 차이를 둘 수도 있을 것 같아 분리함
         * 마지막 리팩토링할 떄 똑같으면, 하나로 합치자.
         * */
-
         // 멤버검증
-        Member member = checkUtil.validateMember(1l);
+        Member member = checkUtil.validateMember(2l);
         // status 검증
         try {
             Status.valueOf(status);
@@ -174,10 +173,9 @@ public class OrderService {
             return CommonResponseDto.fail(STATUS_NOT_FOUND);
         }
 
-        List<Orders> ordersList =  orderRepository.getOrderList(member.getId(), status, limit, offset).orElse(null);
+        List<OrderResponseDto> ordersList =  orderCustomRepository.getOrderListOwner(member.getId(), status, limit, offset);
 
-        return CommonResponseDto.success(ORDERLIST_SUCCESS, ordersList.stream().map(
-                order -> new OrderResponseDto(order)).collect(Collectors.toList()));
+        return CommonResponseDto.success(ORDERLIST_SUCCESS, ordersList);
     }
 
     // 일일 매출 (오너)
@@ -185,17 +183,19 @@ public class OrderService {
     public CommonResponseDto<?> getIncomeListDay(HttpServletRequest request) {
 
         // 멤버검증
-        Member owner = checkUtil.validateMember(1l);
+        Member owner = checkUtil.validateMember(2l);
         return CommonResponseDto.success(INCOMELIST_SUCCESS,
-                orderCustomRepository.getIncomeListDay(1l, LocalDate.now()));
+                orderCustomRepository.getIncomeListDay(2l, LocalDate.now()));
 
     }
     // 월 매출 (오너)
+    @Transactional(readOnly = true)
     public CommonResponseDto<?> getIncomeListMonth(HttpServletRequest request) {
 
         // 멤버검증
-        Member owner = checkUtil.validateMember(1l);
+        Member owner = checkUtil.validateMember(2l);
         return CommonResponseDto.success(INCOMELIST_SUCCESS,
-                orderCustomRepository.getIncomeListMonth(1l, LocalDate.now()));
+                orderCustomRepository.getIncomeListMonth(2l, LocalDate.now()));
     }
+
 }
