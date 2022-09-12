@@ -19,17 +19,17 @@ public class OrderController {
     // 주문하기
     @PostMapping("/{vehicleId}")
     public CommonResponseDto<?> order(HttpServletRequest request,
-                                   @PathVariable Long vehicleId,
-                                   @RequestBody OrderRequestDto orderRequestDto){
+                                      @PathVariable Long vehicleId,
+                                      @RequestBody OrderRequestDto orderRequestDto){
         return orderService.order(request, vehicleId, orderRequestDto);
     }
 
     // 주문 리스트 가져오기(렌터)
     @GetMapping("/renter")
     public CommonResponseDto<?> getOrderListRenter(HttpServletRequest request,
-                                                @RequestParam String status,
-                                                @RequestParam int limit,
-                                                @RequestParam int offset) {
+                                                   @RequestParam String status,
+                                                   @RequestParam int limit,
+                                                   @RequestParam int offset) {
         return orderService.getOrderListRenter(request, status, limit, offset);
     }
 
@@ -45,9 +45,9 @@ public class OrderController {
     // 오너 판매리스트(예약, 진행, 완료, 취소)
     @GetMapping("/owner")
     public CommonResponseDto<?> getOrderListOwner(HttpServletRequest request,
-                                               @RequestParam String status,
-                                               @RequestParam int limit,
-                                               @RequestParam int offset) {
+                                                  @RequestParam String status,
+                                                  @RequestParam int limit,
+                                                  @RequestParam int offset) {
         return orderService.getOrderListOwner(request, status, limit, offset);
     }
 

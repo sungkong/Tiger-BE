@@ -33,8 +33,8 @@ public class OrderCustomRepository {
 
     // 판매리스트(오너)
     public List<OrderResponseDto> getOrderListOwner(Long ownerId, String status, int limit, int offset) {
-        return jpaQueryFactory.select(new QOrderResponseDto(order.id, vehicle.id, vehicle.name, order.totalAmount,
-                vehicle.thumbnail, vehicle.address, order.startDate, order.endDate, order.createdAt))
+        return jpaQueryFactory.select(new QOrderResponseDto(order.id, vehicle.id, vehicle.vname, order.totalAmount,
+                vehicle.thumbnail, vehicle.location, order.startDate, order.endDate, order.createdAt))
                 .from(order)
                 .join(order.vehicle, vehicle)
                 .where(vehicle.ownerId.eq(ownerId)
@@ -55,7 +55,7 @@ public class OrderCustomRepository {
                 .on(order.vehicle.id.eq(vehicle.id))
                 .where(vehicle.ownerId.eq(ownerId)
                         .and(dateFormatYYYYmm(null).eq(dateFormatYYYYmm(now)))
-                        .and(order.status.ne(Status.CANCLE)))
+                        .and(order.status.ne(Status.CANCEL)))
                 .groupBy(dateFormatYYYYmmdd())
                 .fetch();
     }
@@ -69,7 +69,7 @@ public class OrderCustomRepository {
                 .on(order.vehicle.id.eq(vehicle.id))
                 .where(vehicle.ownerId.eq(ownerId)
                         .and(dateFormatYYYY(null).eq(dateFormatYYYY(now)))
-                        .and(order.status.ne(Status.CANCLE)))
+                        .and(order.status.ne(Status.CANCEL)))
                 .groupBy(dateFormatYYYYmm(null))
                 .fetch();
     }
@@ -83,7 +83,7 @@ public class OrderCustomRepository {
                 .join(vehicle)
                 .on(order.vehicle.id.eq(vehicle.id))
                 .where(vehicle.ownerId.eq(ownerId)
-                        .and(order.status.ne(Status.CANCLE))
+                        .and(order.status.ne(Status.CANCEL))
                         .and(dateFormatYYYY(null).eq(dateFormatYYYY(now))))
                 .groupBy(dateFormatYYYYmm(null))
                 .fetch();

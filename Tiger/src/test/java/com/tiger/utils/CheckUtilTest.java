@@ -138,11 +138,16 @@ class CheckUtilTest {
     void validateReturnPeriod(){
         boolean result = true;
         LocalDate now = LocalDate.now();
-        Orders order = orderRepository.findById(1l).get();
+        LocalDate asdf = LocalDate.parse("2022-11-03");
+        LocalDate asdf2 = LocalDate.parse("2022-11-04");
+        Orders order = orderRepository.findById(22l).get();
         if(now.compareTo(order.getStartDate()) >= 0 && !order.getStatus().equals("RESERVED")){
             result = false;
         }
-        assertThat(result).isFalse();
+        System.out.println("now.compareTo(order.getStartDate()) = " + now.compareTo(order.getStartDate()));
+        System.out.println("asdf = " + asdf.compareTo(order.getStartDate()));
+        System.out.println("asdf2 = " + asdf2.compareTo(order.getStartDate()));
+        assertThat(result).isTrue();
     }
 
     @Test

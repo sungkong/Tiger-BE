@@ -1,6 +1,7 @@
 package com.tiger.service;
 
 import com.tiger.domain.CommonResponseDto;
+import com.tiger.domain.UserDetailsImpl;
 import com.tiger.domain.bank.Bank;
 import com.tiger.domain.member.Member;
 import com.tiger.domain.openDate.OpenDate;
@@ -12,19 +13,15 @@ import com.tiger.domain.payment.PayMethod;
 import com.tiger.domain.payment.Payment;
 import com.tiger.domain.vehicle.Vehicle;
 import com.tiger.exception.CustomException;
-import com.tiger.exception.StatusCode;
 import com.tiger.repository.*;
 import com.tiger.utils.CheckUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.tiger.exception.StatusCode.*;
@@ -45,7 +42,7 @@ public class OrderService {
     public CommonResponseDto<?> order(HttpServletRequest request, Long vehicleId, OrderRequestDto orderRequestDto){
 
         // 회원 검증
-        Member member = checkUtil.validateMember(1L);
+        Member member = checkUtil.validateMember();
         // 상품 검증
         Vehicle vehicle = checkUtil.validateVehicle(vehicleId);
         // 예약 기간 검증
@@ -59,6 +56,7 @@ public class OrderService {
                 .endDate(orderRequestDto.getEndDate())
                 .status(Status.RESERVED)
                 .vehicle(vehicle)
+                .totalAmount(orderRequestDto.getPaidAmount())
                 .build();
 
 
@@ -90,7 +88,7 @@ public class OrderService {
     public CommonResponseDto<?> getOrderListRenter(HttpServletRequest request, String status, int limit, int offset) {
 
         // 회원 검증
-        Member member = checkUtil.validateMember(1L);
+        Member member = checkUtil.validateMember();
 
         // status 검증
         try {
@@ -109,7 +107,7 @@ public class OrderService {
     public CommonResponseDto<?> refund(HttpServletRequest request, Long orderId) {
 
         Orders order = checkUtil.validateOrder(orderId);
-        Member member = checkUtil.validateMember(1l);
+        Member member = checkUtil.validateMember();
         // 주문 번호 존재 검증
         // 로그인 유저가 주문한 것인지 확인하는 검증
         checkUtil.validateOwner(member, order);
@@ -129,13 +127,13 @@ public class OrderService {
         }
 
         LocalDate now = LocalDate.now();
-        if(now.compareTo(order.getStartDate()) <= 0 || !order.getStatus().equals("RESERVED")){
+        if(now.compareTo(order.getStartDate()) >= 0 || !order.getStatus().toString().equals("RESERVED")){
             throw new CustomException(REFUND_ELIGIBILITY_NOT_FOUND);
         }
         // Bank에서 돈 빠져나감
         bank.withdraw(price);
         // Orders 환불 상태로 변경
-        order.setStatus(Status.CANCLE);
+        order.setStatus(Status.CANCEL);
         // 상품 사용기간 재오픈(필요한가?)
         return CommonResponseDto.success(CANCLE_SUCCESS, null);
     }
@@ -147,7 +145,7 @@ public class OrderService {
         // 주문 번호 존재 검증
         Orders order = checkUtil.validateOrder(orderId);
         // 로그인 유저와 오너가 동일한지 검증
-        Member member = checkUtil.validateMember(1l);
+        Member member = checkUtil.validateMember();
         checkUtil.validateOwner(member, order);
         // 조기 반납인 경우 남은 기간 재오픈
 
@@ -166,7 +164,7 @@ public class OrderService {
         * */
 
         // 멤버검증
-        Member member = checkUtil.validateMember(2l);
+        Member member = checkUtil.validateMember();
         // status 검증
         try {
             Status.valueOf(status);
@@ -184,9 +182,9 @@ public class OrderService {
     public CommonResponseDto<?> getIncomeListDay(HttpServletRequest request) {
 
         // 멤버검증
-        Member owner = checkUtil.validateMember(2l);
+        Member owner = checkUtil.validateMember();
         return CommonResponseDto.success(INCOMELIST_SUCCESS,
-                orderCustomRepository.getIncomeListDay(2l, LocalDate.now()));
+                orderCustomRepository.getIncomeListDay(owner.getId(), LocalDate.now()));
 
     }
     // 월 매출 (오너)
@@ -194,9 +192,9 @@ public class OrderService {
     public CommonResponseDto<?> getIncomeListMonth(HttpServletRequest request) {
 
         // 멤버검증
-        Member owner = checkUtil.validateMember(2l);
+        Member owner = checkUtil.validateMember();
         return CommonResponseDto.success(INCOMELIST_SUCCESS,
-                orderCustomRepository.getIncomeListMonth(2l, LocalDate.now()));
+                orderCustomRepository.getIncomeListMonth(owner.getId(), LocalDate.now()));
     }
 
 }
