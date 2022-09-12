@@ -11,8 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 @Builder
 @AllArgsConstructor
@@ -41,21 +41,32 @@ public class Vehicle extends Timestamped {
 
     // 상품 주소
     @Column(nullable = false)
-    private String address;
+    private String location;
 
     // 상품 활성/비활성
     @Column(nullable = false)
     private Boolean isValid;
 
-    // 상품 대표 이미지
+    // 상품 이미지
+    @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VehicleImage> images;
+
+    // 상품 썸네일
+    @Column(nullable = false)
+    private String thumbnail;
 
     /*
     ==============================================
      */
 
-    // 차 이름(브랜드 + 모델명)
+    // 차 브랜드
     @Column(nullable = false)
-    private String name;
+    private String vbrand;
+
+    // 차 이름
+    @Column(nullable = false)
+    private String vname;
+
 
     // 차 타입(경형, 중형, 대형, 승합RV, 수입)
     @Column(nullable = false)
@@ -69,42 +80,41 @@ public class Vehicle extends Timestamped {
     @Column(nullable = false)
     private String fuelType;
 
+    // 차 탑승객 수
+    @Column(nullable = false)
+    private String passengers;
+
     // 차 변속기 타입(자동, 수동)
     @Column(nullable = false)
-    private String transType;
+    private String transmission;
 
     // 차 연비
     @Column(nullable = false)
     private String fuelEfficiency;
 
-    // 썸네일
-    private String thumbnail;
-
-    public Vehicle update(VehicleRequestDto requestDto) {
-        this.ownerId = requestDto.getOwnerId();
-        this.price = requestDto.getPrice();
-        this.description = requestDto.getDescription();
-        this.address = requestDto.getAddress();
-        this.name = requestDto.getName();
-        this.type = requestDto.getType();
-        this.years = requestDto.getYears();
-        this.fuelType = requestDto.getFuelType();
-        this.transType = requestDto.getTransType();
-        this.fuelEfficiency = requestDto.getFuelEfficiency();
-
-        return this;
-    }
-
-    public Vehicle delete() {
-        this.isValid = false;
-
-        return this;
-    }
-
-    // OpenDate 테이블과 연관관계
-
     // 주문목록
     @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Orders> orders;
+
+    public void update(VehicleRequestDto requestDto, Long ownerId, String thumbnail) {
+        this.ownerId = ownerId;
+        this.price = requestDto.getPrice();
+        this.description = requestDto.getDescription();
+        this.location = requestDto.getLocation();
+        this.vbrand = requestDto.getVbrand();
+        this.vname = requestDto.getVname();
+        this.type = requestDto.getType();
+        this.years = requestDto.getYears();
+        this.fuelType = requestDto.getFuelType();
+        this.passengers = requestDto.getPassengers();
+        this.transmission = requestDto.getTransmission();
+        this.fuelEfficiency = requestDto.getFuelEfficiency();
+        this.thumbnail = thumbnail;
+    }
+
+    public void delete(String defaultThumbnail) {
+        this.thumbnail = defaultThumbnail;
+        this.isValid = false;
+    }
 
 }
