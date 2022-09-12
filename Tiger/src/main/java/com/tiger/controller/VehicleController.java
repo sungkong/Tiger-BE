@@ -1,100 +1,104 @@
 package com.tiger.controller;
 
-import com.tiger.domain.vehicle.Vehicle;
+import com.tiger.domain.CommonResponseDto;
+import com.tiger.domain.UserDetailsImpl;
+import com.tiger.domain.member.Member;
+import com.tiger.domain.vehicle.dto.VehicleCommonResponseDto;
+import com.tiger.domain.vehicle.dto.VehicleDetailResponseDto;
+import com.tiger.domain.vehicle.dto.VehicleOwnerResponseDto;
 import com.tiger.domain.vehicle.dto.VehicleRequestDto;
-import com.tiger.domain.vehicle.dto.VehicleSearch;
+import com.tiger.exception.StatusCode;
 import com.tiger.service.VehicleService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController @RequestMapping("/api/vehicle")
-@Api(tags = "[상품 컨트롤러]")
 public class VehicleController {
 
     private final VehicleService vehicleService;
 
     // 상품 등록
     @PostMapping("/management")
-    @ApiOperation(value = "상품 등록")
-    public ResponseEntity<?> create(@RequestBody VehicleRequestDto requestDto) {
+    public CommonResponseDto<?> create(@ModelAttribute VehicleRequestDto requestDto,
+                                       @AuthenticationPrincipal UserDetails userDetails) {
 
-        Vehicle vehicle = vehicleService.create(requestDto);
+        Member member = ((UserDetailsImpl) userDetails).getMember();
 
-        return ResponseEntity.ok(vehicle);
+        String name = vehicleService.create(requestDto, member.getId());
+
+        return CommonResponseDto.success(StatusCode.VEHICLE_CREATED, name);
     }
 
     // 수입 상품 조회 (메인페이지)
     @GetMapping
-    @ApiOperation(value = "수입 상품 조회", notes = "메인페이지에서 사용")
-    public ResponseEntity<?> readAllByTypeImported() {
+    public CommonResponseDto<?> readAllByTypeImported() {
         String type = "수입";
 
-        List<Vehicle> vehicleList = vehicleService.readAllByType(type);
+        List<VehicleCommonResponseDto> vehicleCommonResponseDtos = vehicleService.readAllByType(type);
 
-        return ResponseEntity.ok(vehicleList);
+        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleCommonResponseDtos);
     }
 
     // 상품 상세 조회
     @GetMapping("/{vId}")
-    @ApiOperation(value = "상품 상세 조회")
-    public ResponseEntity<?> readOne(@PathVariable Long vId) {
+    public CommonResponseDto<?> readOne(@PathVariable Long vId) {
 
-        Vehicle vehicle = vehicleService.readOne(vId);
+        VehicleDetailResponseDto vehicleDetailResponseDto = vehicleService.readOne(vId);
 
-        return ResponseEntity.ok(vehicle);
+        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleDetailResponseDto);
     }
 
 
     //등록한 상품 조회 (오너 마이페이지)
-    @GetMapping("/management/{ownerId}")
-    @ApiOperation(value = "등록한 상품 조회", notes = "오너 모드 마이페이지에서 사용")
-    public ResponseEntity<?> readAllByOwnerId(@PathVariable Long ownerId) {
+    @GetMapping("/management")
+    public CommonResponseDto<?> readAllByOwnerId(@AuthenticationPrincipal UserDetails userDetails) {
 
-        List<Vehicle> vehicleList = vehicleService.readAllByOwnerId(ownerId);
+        Member member = ((UserDetailsImpl) userDetails).getMember();
 
-        return ResponseEntity.ok(vehicleList);
+        List<VehicleOwnerResponseDto> vehicleOwnerResponseDtos = vehicleService.readAllByOwnerId(member.getId());
+
+        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleOwnerResponseDtos);
     }
 
-    // 상품 수정 페이지 (오너 마이페이지)
+    // 상품 수정페이지 요청
+    @GetMapping("/management/{vId}")
+    public CommonResponseDto<?> updatePage(@PathVariable Long vId,
+                                           @AuthenticationPrincipal UserDetails userDetails) {
 
+        Member member = ((UserDetailsImpl) userDetails).getMember();
+
+        VehicleDetailResponseDto vehicleDetailResponseDto = vehicleService.updatePage(vId, member.getId());
+
+        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleDetailResponseDto);
+    }
 
     // 상품 수정
     @PutMapping("/management/{vId}")
-    @ApiOperation(value = "상품 수정", notes = "오너 모드 마이페이지에서 사용")
-    public ResponseEntity<?> update(@PathVariable Long vId, @RequestBody VehicleRequestDto requestDto) {
+    public CommonResponseDto<?> update(@PathVariable Long vId,
+                                       @ModelAttribute VehicleRequestDto requestDto,
+                                       @AuthenticationPrincipal UserDetails userDetails) {
 
-        Vehicle vehicle = vehicleService.update(vId, requestDto);
+        Member member = ((UserDetailsImpl) userDetails).getMember();
 
-        return ResponseEntity.ok(vehicle);
+        String name = vehicleService.update(vId, requestDto, member.getId());
+
+        return CommonResponseDto.success(StatusCode.VEHICLE_UPDATED, name);
     }
 
     // 상품 삭제
     @DeleteMapping("/management/{vId}")
-    @ApiOperation(value = "상품 수정", notes = "오너 모드 마이페이지에서 사용")
-    public ResponseEntity<?> delete(@PathVariable Long vId) {
+    public CommonResponseDto<?> delete(@PathVariable Long vId,
+                                       @AuthenticationPrincipal UserDetails userDetails) {
 
-        Vehicle vehicle = vehicleService.delete(vId);
+        Member member = ((UserDetailsImpl) userDetails).getMember();
 
-        return ResponseEntity.ok(vehicle);
+        String name = vehicleService.delete(vId, member.getId());
+
+        return CommonResponseDto.success(StatusCode.VEHICLE_DELETED, name);
     }
-
-
-    /* 상품 검색
-    @GetMapping
-    @ApiOperation(value = "상품 검색", notes = "")
-    public ResponseEntity<?> search(@ModelAttribute VehicleSearch vehicleSearch)
-    */
-
-
-
-
-
-
 }
