@@ -1,5 +1,6 @@
 package com.tiger.service;
 
+import com.tiger.domain.member.Member;
 import com.tiger.domain.openDate.OpenDate;
 import com.tiger.domain.openDate.dto.OpenDateListRequestDto;
 import com.tiger.domain.openDate.dto.OpenDateRequestDto;
@@ -29,6 +30,8 @@ public class OpenDateService {
 
     @Transactional
     public void createOpenDate(OpenDateListRequestDto openDateListRequestDto, Long vid) {
+
+       Member member = checkUtil.validateMember();
 
         Vehicle findVehicle = vehicleRepository.findById(vid).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));
 
@@ -94,6 +97,9 @@ public class OpenDateService {
 
     @Transactional
     public List<LocalDate> getOpenAndReservedDate(Long vid) {
+        Member member = checkUtil.validateMember();
+
+
         List<OpenDate> findOpenDateList = openDateRepository.findAllByVehicleIdOrderByStartDateAsc(vid).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));
 
         List<LocalDate> dtoList = new ArrayList<>();

@@ -43,7 +43,7 @@ public class CheckUtil {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal == null){
-            return null;
+            throw new CustomException(USER_NOT_FOUND);
         }
         UserDetails userDetails = (UserDetails) principal;
         return ((UserDetailsImpl) userDetails).getMember();
