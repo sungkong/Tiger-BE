@@ -1,8 +1,11 @@
 package com.tiger.domain.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tiger.domain.Timestamped;
 import com.tiger.domain.member.Member;
+import com.tiger.domain.order.dto.OrderRequestDto;
 import com.tiger.domain.payment.Payment;
+import com.tiger.domain.vehicle.Vehicle;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +13,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -27,20 +32,34 @@ public class Orders extends Timestamped {
     private Member member;
 
     @Column(nullable = false)
-    private LocalDate start_date;
+    private LocalDate startDate;
 
     @Column(nullable = false)
-    private LocalDate end_date;
+    private LocalDate endDate;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "orders", fetch = FetchType.LAZY)
+    @Column
+    private LocalDateTime returnDate;
+
+    @Column(nullable = false)
+    private int totalAmount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Vehicle vehicle;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 
     // 상태 변경하기
     public void setStatus(Status status){
         this.status = status;
+    }
+    // 반납 상태로 변경하기
+    public void setReturn(){
+        this.status = Status.RETURN;
+        this.returnDate = LocalDateTime.now();
     }
 }
