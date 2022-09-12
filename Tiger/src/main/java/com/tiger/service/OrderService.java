@@ -17,7 +17,6 @@ import com.tiger.repository.*;
 import com.tiger.utils.CheckUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +60,7 @@ public class OrderService {
                 .status(Status.RESERVED)
                 .vehicle(vehicle)
                 .build();
+
 
         Long order_id = orderRepository.save(order).getId();
 
@@ -141,7 +141,6 @@ public class OrderService {
     }
 
     // 반납 확인
-    @Transactional
     public CommonResponseDto<?> returnVehicle(HttpServletRequest request, Long orderId){
 
 
@@ -165,6 +164,7 @@ public class OrderService {
         * 렌터와 코드는 똑같으나, 추후 렌터의 주문리스트와 오너의 주문리스트에 차이를 둘 수도 있을 것 같아 분리함
         * 마지막 리팩토링할 떄 똑같으면, 하나로 합치자.
         * */
+
         // 멤버검증
         Member member = checkUtil.validateMember(2l);
         // status 검증
@@ -198,9 +198,5 @@ public class OrderService {
         return CommonResponseDto.success(INCOMELIST_SUCCESS,
                 orderCustomRepository.getIncomeListMonth(2l, LocalDate.now()));
     }
-
-    //
-    //@Scheduled(cron="1 0 0")
-
 
 }
