@@ -1,33 +1,49 @@
 package com.tiger.domain.openDate;
 
-import com.tiger.domain.order.Orders;
-import com.tiger.domain.payment.PayMethod;
-import lombok.AllArgsConstructor;
+import com.tiger.domain.Timestamped;
+import com.tiger.domain.vehicle.Vehicle;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
 import java.time.LocalDate;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Entity
-public class OpenDate {
+import static javax.persistence.FetchType.*;
 
+@Entity
+@Getter
+@NoArgsConstructor
+public class OpenDate extends Timestamped {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
-    // 임시
-    @Column(nullable = false)
-    private Long vehicleId; // 상품 식별번호
+    @Column(name = "START_DATE",nullable = false)
+    private LocalDate startDate;
 
-    @Column(nullable = false)
-    private LocalDate startDate; // 시작 날짜
+    @Column(name = "END_DATE",nullable = false)
+    private LocalDate endDate;
 
-    @Column(nullable = false)
-    private LocalDate endDate; // 시작 날짜
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "VEHICLE_ID")
+    private Vehicle vehicle;
+
+    @Builder
+    public OpenDate(LocalDate startDate, LocalDate endDate , Vehicle vehicle){
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.vehicle = vehicle;
+
+    }
+
+//    public void updateOpenDate(OpenDateRequestDto openDateRequestDto){
+//        this.startDate = openDateRequestDto.getStartDate();
+//        this.endDate =openDateRequestDto.getEndDate();
+//
+//    }
+
+
+
 }

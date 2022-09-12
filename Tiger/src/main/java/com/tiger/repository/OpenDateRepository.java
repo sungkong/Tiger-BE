@@ -22,4 +22,7 @@ public interface OpenDateRepository extends JpaRepository<OpenDate, Long> {
     Optional<List<OpenDate>> findAllByIncludeOrderDateMonth(@Param("vehicleId") Long vehicleId,
                                                             @Param("startDate") LocalDate startDate,
                                                             @Param("endDate")LocalDate endDate);
+    Optional<List<OpenDate>> findAllByVehicleIdOrderByStartDateAsc(Long vid);
+
+    boolean existsByVehicleId(Long vid);
 }
