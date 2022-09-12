@@ -1,6 +1,7 @@
 package com.tiger.utils;
 
 import com.tiger.domain.CommonResponseDto;
+import com.tiger.domain.UserDetailsImpl;
 import com.tiger.domain.bank.Bank;
 import com.tiger.domain.member.Member;
 import com.tiger.domain.openDate.OpenDate;
@@ -12,6 +13,10 @@ import com.tiger.exception.CustomException;
 import com.tiger.exception.StatusCode;
 import com.tiger.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,10 +39,17 @@ public class CheckUtil {
 
     // 회원 검증
     @Transactional(readOnly = true)
-    public Member validateMember(long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(USER_NOT_FOUND)
-        );
+    public Member validateMember() {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal == null){
+            return null;
+        }
+        UserDetails userDetails = (UserDetails) principal;
+        return ((UserDetailsImpl) userDetails).getMember();
+//        return memberRepository.findById(memberId).orElseThrow(
+//                () -> new CustomException(USER_NOT_FOUND)
+//        );
     }
 
     // 주문번호 검증
@@ -153,7 +165,7 @@ public class CheckUtil {
          }
 
          LocalDate now = LocalDate.now();
-         if(now.compareTo(order.getStartDate()) <= 0 || !order.getStatus().equals("RESERVED")){
+         if(now.compareTo(order.getStartDate()) >= 0 || !order.getStatus().toString().equals("RESERVED")){
              throw new CustomException(REFUND_ELIGIBILITY_NOT_FOUND);
          }
          return bank;

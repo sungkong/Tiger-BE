@@ -2,7 +2,6 @@ package com.tiger.domain.order.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.tiger.domain.order.Orders;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,10 +38,10 @@ public class OrderResponseDto {
     public OrderResponseDto(Orders orders){
         this.oid = orders.getId();
         this.vid = orders.getVehicle().getId();
-        this.vname = orders.getVehicle().getName();
+        this.vname = orders.getVehicle().getVname();
         this.price = orders.getTotalAmount();
         this.thumbnail = orders.getVehicle().getThumbnail();
-        this.location = orders.getVehicle().getAddress();
+        this.location = orders.getVehicle().getLocation();
         this.startDate = orders.getStartDate();
         this.endDate = orders.getEndDate();
         this.createdAt = orders.getCreatedAt();
