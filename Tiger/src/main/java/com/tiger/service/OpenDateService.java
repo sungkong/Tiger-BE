@@ -31,7 +31,7 @@ public class OpenDateService {
     @Transactional
     public void createOpenDate(OpenDateListRequestDto openDateListRequestDto, Long vid) {
 
-       Member member = checkUtil.validateMember();
+        checkUtil.validateMember();
 
         Vehicle findVehicle = vehicleRepository.findById(vid).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));
 
@@ -42,6 +42,13 @@ public class OpenDateService {
         // 연속된 날짜 판별
         // startDate, endDate 뽑아서 List 생성
         List<OpenDateRequestDto> newOpendateList = new ArrayList<>();
+
+        if (openDateList.get(0).isBefore(LocalDate.now())){
+
+            throw new CustomException(INVALID_DATE);
+
+        }
+
         OpenDateRequestDto newOpendate = new OpenDateRequestDto(openDateList.get(0)); //startDate 세팅
 
         for (int i = 0; i < openDateList.size(); i++) {
@@ -97,7 +104,7 @@ public class OpenDateService {
 
     @Transactional
     public List<LocalDate> getOpenAndReservedDate(Long vid) {
-        Member member = checkUtil.validateMember();
+      checkUtil.validateMember();
 
 
         List<OpenDate> findOpenDateList = openDateRepository.findAllByVehicleIdOrderByStartDateAsc(vid).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));

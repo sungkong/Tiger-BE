@@ -1,10 +1,8 @@
 package com.tiger.service;
 
 import com.tiger.domain.CommonResponseDto;
-import com.tiger.domain.UserDetailsImpl;
 import com.tiger.domain.bank.Bank;
 import com.tiger.domain.member.Member;
-import com.tiger.domain.openDate.OpenDate;
 import com.tiger.domain.order.Orders;
 import com.tiger.domain.order.Status;
 import com.tiger.domain.order.dto.OrderRequestDto;
@@ -21,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +34,6 @@ public class OrderService {
     private final OrderCustomRepository orderCustomRepository;
     private final PaymentRepository paymentRepository;
     private final BankRepository bankRepository;
-    private final OpenDateRepository openDateRepository;
 
     // 주문하기
     @Transactional
@@ -101,6 +99,32 @@ public class OrderService {
         return CommonResponseDto.success(ORDERLIST_SUCCESS ,ordersList.stream().map(
                 order -> new OrderResponseDto(order)).collect(Collectors.toList()));
     }
+
+    @Transactional(readOnly = true)
+    public  List<LocalDate> getReservedDateList(Long vid){
+        List<Orders> findOrdersList = orderRepository.findAllByVehicleIdAndStatusNotOrderByStartDateAsc(vid,Status.RETURN).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));
+
+        List<LocalDate> dtoList = new ArrayList<>();
+
+        for (Orders findOrder : findOrdersList) {
+
+            LocalDate startDate = findOrder.getStartDate();
+            LocalDate endDate = findOrder.getEndDate();
+
+
+            if (startDate.isEqual(endDate)) {
+                dtoList.add(startDate);
+            } else {
+                dtoList.addAll(startDate.datesUntil(endDate.plusDays(1))
+                        .collect(Collectors.toList()));
+
+            }
+        }
+
+        return dtoList;
+
+    }
+
 
     // 환불(렌터)
     @Transactional

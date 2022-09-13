@@ -1,6 +1,5 @@
 package com.tiger.utils;
 
-import com.tiger.domain.CommonResponseDto;
 import com.tiger.domain.UserDetailsImpl;
 import com.tiger.domain.bank.Bank;
 import com.tiger.domain.member.Member;
@@ -13,8 +12,6 @@ import com.tiger.exception.CustomException;
 import com.tiger.exception.StatusCode;
 import com.tiger.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;

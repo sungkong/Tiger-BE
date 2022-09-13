@@ -17,7 +17,7 @@ import static javax.persistence.FetchType.*;
 @NoArgsConstructor
 public class OpenDate extends Timestamped {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "START_DATE",nullable = false)
