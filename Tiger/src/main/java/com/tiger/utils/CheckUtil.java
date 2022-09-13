@@ -69,7 +69,15 @@ public class CheckUtil {
     @Transactional(readOnly = true)
     public void validateOwner(Member member, Orders order){
         if(!order.getMember().getId().equals(member.getId())){
-            throw new CustomException(StatusCode.HOST_NOT_FOUND);
+            throw new CustomException(HOST_NOT_FOUND);
+        }
+    }
+
+    // 본인 상품 주문 블락
+    @Transactional(readOnly = true)
+    public void validateSelfOrder(Member member, Vehicle vehicle){
+        if(member.getId().equals(vehicle.getOwnerId())){
+            throw new CustomException(SELF_ORDER_FORBIDDEN);
         }
     }
 
@@ -91,6 +99,11 @@ public class CheckUtil {
     @Transactional(readOnly = true)
     public void validateOrderDate(Long vehicleId, OrderRequestDto orderRequestDto){
 
+        // 예약 당일 이전 날짜들 예약 막아놓기
+        LocalDate now = LocalDate.now();
+        if(now.compareTo(orderRequestDto.getStartDate()) > 0){
+            throw new CustomException(EXPIRED_DATE_FORBIDDEN);
+        }
         // 주문기간만 포함된 달의 openDate만 가져오기
         List<OpenDate> openDateList = openDateRepository.findAllByIncludeOrderDateMonth(vehicleId,
                 orderRequestDto.getStartDate(),

@@ -1,6 +1,7 @@
 package com.tiger.utils;
 
 import com.tiger.domain.bank.Bank;
+import com.tiger.domain.member.Member;
 import com.tiger.domain.openDate.OpenDate;
 import com.tiger.domain.order.Orders;
 import com.tiger.domain.order.dto.OrderRequestDto;
@@ -21,8 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.tiger.exception.StatusCode.OPENDATE_NOT_FOUND;
-import static com.tiger.exception.StatusCode.PRICE_NOT_FOUND;
+import static com.tiger.exception.StatusCode.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -171,6 +171,18 @@ class CheckUtilTest {
         // then
         System.out.println(sum);
         assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("본인 상품 주문 못하게 하기")
+    void validateSelfOrder(){
+        boolean result = true;
+        Member member = memberRepository.findById(5L).get();
+        Vehicle vehicle = vehicleRepository.findById(1L).get();
+        if(member.getId().equals(vehicle.getOwnerId())){
+            result = false;
+        }
+        assertThat(result).isFalse();
     }
 
 
