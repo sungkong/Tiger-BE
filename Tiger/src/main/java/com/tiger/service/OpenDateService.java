@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class OpenDateService {
         // startDate, endDate 뽑아서 List 생성
         List<OpenDateRequestDto> newOpendateList = new ArrayList<>();
 
-        if (openDateList.get(0).isBefore(LocalDate.now())){
+        if (openDateList.get(0).isBefore(LocalDate.now())) {
 
             throw new CustomException(INVALID_DATE);
 
@@ -103,13 +104,9 @@ public class OpenDateService {
     }
 
     @Transactional
-    public List<LocalDate> getOpenDate(Long vid) {
-      checkUtil.validateMember();
-
-
+    public List<String> getOpenDate(Long vid) {
+        checkUtil.validateMember();
         List<OpenDate> findOpenDateList = openDateRepository.findAllByVehicleIdOrderByStartDateAsc(vid).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));
-
-
         List<LocalDate> dtoList = new ArrayList<>();
         for (OpenDate findOpenDate : findOpenDateList) {
 
@@ -126,7 +123,13 @@ public class OpenDateService {
             }
         }
 
-        return dtoList;
+        List<String> stringList = new ArrayList<>();
+        for (LocalDate revDate : dtoList) {
+            String reservedDate = revDate.format(DateTimeFormatter.ofPattern("yyyy-M-d"));
+            stringList.add(reservedDate);
+        }
+        return stringList;
+
 
     }
 }
