@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -101,7 +102,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public  List<LocalDate> getReservedDateList(Long vid){
+    public  List<String> getReservedDateList(Long vid){
         List<Orders> findOrdersList = orderRepository.findAllByVehicleIdAndStatusNotOrderByStartDateAsc(vid,Status.RETURN).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));
 
         List<LocalDate> dtoList = new ArrayList<>();
@@ -110,8 +111,6 @@ public class OrderService {
 
             LocalDate startDate = findOrder.getStartDate();
             LocalDate endDate = findOrder.getEndDate();
-
-
             if (startDate.isEqual(endDate)) {
                 dtoList.add(startDate);
             } else {
@@ -121,7 +120,13 @@ public class OrderService {
             }
         }
 
-        return dtoList;
+
+        List<String> stringList = new ArrayList<>();
+       for (LocalDate revDate : dtoList){
+           String reservedDate = revDate.format(DateTimeFormatter.ofPattern("yyyy-M-d"));
+           stringList.add(reservedDate);
+       }
+        return stringList;
 
     }
 

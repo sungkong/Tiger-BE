@@ -45,15 +45,15 @@ public class OpenDateController {
     @ApiOperation(value = "차량 오픈스케줄 수정시,OpenDate와 예약된 날짜 불러오기")
     public CommonResponseDto<?> getOpenAndReservedDate(@PathVariable Long vid) {
 
-        List<LocalDate> getOpenDateList = openDateService.getOpenAndReservedDate(vid);
-        List<LocalDate> getReservedDateList = orderService.getReservedDateList(vid);
+        List<LocalDate> getOpenDateList = openDateService.getOpenDate(vid);
+        List<String> getReservedDateList = orderService.getReservedDateList(vid);
 
         @Getter
         @AllArgsConstructor
         class output {
             private Long vid;
             private List<LocalDate> openDateList;
-            private List<LocalDate> reservedDateList;
+            private List<String> reservedDateList;
         }
 
 
