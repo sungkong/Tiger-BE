@@ -17,8 +17,8 @@ public interface OpenDateRepository extends JpaRepository<OpenDate, Long> {
     @Query(value =  "SELECT * " +
                     "FROM open_date " +
                     "WHERE vehicle_id = :vehicleId " +
-                    "AND DATE_FORMAT(:startDate, '%Y-%m') = DATE_FORMAT(start_date, '%Y-%m') " +
-                    "  OR DATE_FORMAT(:endDate, '%Y-%m') = DATE_FORMAT(end_date, '%Y-%m')", nativeQuery = true)
+                    "AND (DATE_FORMAT(:startDate, '%Y-%m') = DATE_FORMAT(start_date, '%Y-%m') " +
+                    "  OR DATE_FORMAT(:endDate, '%Y-%m') = DATE_FORMAT(end_date, '%Y-%m'))", nativeQuery = true)
     Optional<List<OpenDate>> findAllByIncludeOrderDateMonth(@Param("vehicleId") Long vehicleId,
                                                             @Param("startDate") LocalDate startDate,
                                                             @Param("endDate")LocalDate endDate);
