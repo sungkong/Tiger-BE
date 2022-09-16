@@ -137,8 +137,7 @@ public class OpenDateService {
     public void createEmptyList(Vehicle vehicle){
 
         List<LocalDate> localList = new ArrayList<>();
-        LocalDate present = LocalDate.of(2022,1,1);
-        localList.add(present);
+        localList.add(LocalDate.now());
 
         List<OpenDate> emptyList = localList.stream()
                 .map(dto -> OpenDate.builder()
@@ -147,7 +146,6 @@ public class OpenDateService {
                         .vehicle(vehicle)
                         .build())
                 .collect(Collectors.toList()); // OpenDate형으로 변환
-
 
         System.out.println("emptyList = " + emptyList);
 
