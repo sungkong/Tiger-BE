@@ -36,7 +36,7 @@ public class VehicleController {
 
         Vehicle vehicle = vehicleService.create(requestDto, member.getId());
 
-        openDateService.createEmptyList(vehicle.getId()); // 차량 생성시 빈 배열 만들기
+        openDateService.createEmptyList(vehicle); // 차량 생성시 빈 배열 만들기
 
 
         return CommonResponseDto.success(StatusCode.VEHICLE_CREATED, vehicle.getVname());

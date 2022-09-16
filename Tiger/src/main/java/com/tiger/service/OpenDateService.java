@@ -134,11 +134,24 @@ public class OpenDateService {
     }
 
     @Transactional
-    public void createEmptyList(Long vid){
+    public void createEmptyList(Vehicle vehicle){
 
-        List<OpenDate> stringList = new ArrayList<>();
+        List<LocalDate> localList = new ArrayList<>();
+        LocalDate present = LocalDate.of(2022,1,1);
+        localList.add(present);
 
-        openDateRepository.saveAll(stringList);
+        List<OpenDate> emptyList = localList.stream()
+                .map(dto -> OpenDate.builder()
+                        .startDate(dto)
+                        .endDate(dto)
+                        .vehicle(vehicle)
+                        .build())
+                .collect(Collectors.toList()); // OpenDate형으로 변환
+
+
+        System.out.println("emptyList = " + emptyList);
+
+        openDateRepository.saveAll(emptyList);
     }
 
 }
