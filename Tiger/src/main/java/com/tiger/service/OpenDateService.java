@@ -132,6 +132,15 @@ public class OpenDateService {
 
 
     }
+
+    @Transactional
+    public void createEmptyList(Long vid){
+
+        List<OpenDate> stringList = new ArrayList<>();
+
+        openDateRepository.saveAll(stringList);
+    }
+
 }
 
 

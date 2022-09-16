@@ -37,7 +37,7 @@ public class VehicleService {
 
     // 상품 등록
     @Transactional
-    public String create(VehicleRequestDto requestDto, Long ownerId) {
+    public Vehicle create(VehicleRequestDto requestDto, Long ownerId) {
 
         List<MultipartFile> multipartFiles = requestDto.getImageList();
 
@@ -71,7 +71,7 @@ public class VehicleService {
             );
         }
 
-        return vehicleRepository.save(vehicle).getVname();
+        return vehicleRepository.save(vehicle);
     }
 
     // 종류별 상품 조회

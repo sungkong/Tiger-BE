@@ -3,15 +3,15 @@ package com.tiger.controller;
 import com.tiger.domain.CommonResponseDto;
 import com.tiger.domain.UserDetailsImpl;
 import com.tiger.domain.member.Member;
+import com.tiger.domain.vehicle.Vehicle;
 import com.tiger.domain.vehicle.dto.*;
 import com.tiger.exception.StatusCode;
+import com.tiger.service.OpenDateService;
 import com.tiger.service.VehicleService;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.asm.Advice;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -24,6 +24,8 @@ public class VehicleController {
 
     private final VehicleService vehicleService;
 
+    private final OpenDateService openDateService;
+
 
     // 상품 등록
     @PostMapping("/management")
@@ -32,9 +34,12 @@ public class VehicleController {
 
         Member member = ((UserDetailsImpl) userDetails).getMember();
 
-        String name = vehicleService.create(requestDto, member.getId());
+        Vehicle vehicle = vehicleService.create(requestDto, member.getId());
 
-        return CommonResponseDto.success(StatusCode.VEHICLE_CREATED, name);
+        openDateService.createEmptyList(vehicle.getId()); // 차량 생성시 빈 배열 만들기
+
+
+        return CommonResponseDto.success(StatusCode.VEHICLE_CREATED, vehicle.getVname());
     }
 
     // 수입 상품 조회 (메인페이지)
