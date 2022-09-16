@@ -5,6 +5,7 @@ import com.tiger.domain.bank.Bank;
 import com.tiger.domain.member.Member;
 import com.tiger.domain.openDate.OpenDate;
 import com.tiger.domain.order.Orders;
+import com.tiger.domain.order.Status;
 import com.tiger.domain.order.dto.OrderRequestDto;
 import com.tiger.domain.payment.Payment;
 import com.tiger.domain.vehicle.Vehicle;
@@ -122,7 +123,7 @@ public class CheckUtil {
         }
 
         // 오픈 기간에서 이미 사용중인 기간 제외하기
-        List<Orders> ordersList = orderRepository.findAllByVehicleId(vehicleId).orElse(null);
+        List<Orders> ordersList = orderRepository.findAllByVehicleIdAndStatusNot(vehicleId, Status.CANCEL).orElse(null);
         for (Orders order : ordersList) {
             int j=0;
             int size = order.getEndDate().compareTo(order.getStartDate());
