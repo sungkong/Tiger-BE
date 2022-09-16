@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.tiger.exception.StatusCode.*;
@@ -115,19 +116,17 @@ public class CheckUtil {
         Set<LocalDate> openDateSet = new HashSet<>();
         for (OpenDate openDate : openDateList) {
             LocalDate startDate = openDate.getStartDate();
-            openDateSet.add(openDate.getStartDate());
             int i=0;
-            while (i<=openDate.getEndDate().compareTo(openDate.getStartDate())){
+            while (i<=openDate.getStartDate().until(openDate.getEndDate(), ChronoUnit.DAYS)){
                 openDateSet.add(startDate.plusDays(i++));
             }
         }
 
         // 오픈 기간에서 이미 사용중인 기간 제외하기
-        List<Orders> ordersList = orderRepository.findAllByVehicleIdAndStatusNot(vehicleId, Status.CANCEL).orElse(null);
+        List<Orders> ordersList = orderRepository.findAllByVehicleIdAndStatusNot(vehicleId,Status.CANCEL).orElse(null);
         for (Orders order : ordersList) {
             int j=0;
-            int size = order.getEndDate().compareTo(order.getStartDate());
-            while (j<=size){
+            while (j<=order.getStartDate().until(order.getEndDate(), ChronoUnit.DAYS)){
                 openDateSet.remove(order.getStartDate().plusDays(j++));
             }
         }
