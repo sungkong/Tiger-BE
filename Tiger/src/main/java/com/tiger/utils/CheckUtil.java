@@ -123,7 +123,7 @@ public class CheckUtil {
         }
 
         // 오픈 기간에서 이미 사용중인 기간 제외하기
-        List<Orders> ordersList = orderRepository.findAllByVehicleId(vehicleId).orElse(null);
+        List<Orders> ordersList = orderRepository.findAllByVehicleIdAndStatusNot(vehicleId,Status.CANCEL).orElse(null);
         for (Orders order : ordersList) {
             int j=0;
             while (j<=order.getStartDate().until(order.getEndDate(), ChronoUnit.DAYS)){
