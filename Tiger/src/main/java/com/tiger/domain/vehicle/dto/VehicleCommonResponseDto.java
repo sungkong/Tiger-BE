@@ -29,6 +29,12 @@ public class VehicleCommonResponseDto {
     // 상품 위치
     private String location;
 
+    // 상품 위치: 위도
+    private Double locationX;
+
+    // 상품 위치: 경도
+    private Double locationY;
+
     // 상품 이미지
     private List<String> imageList;
 
@@ -63,6 +69,8 @@ public class VehicleCommonResponseDto {
         this.price = vehicle.getPrice();
         this.description = vehicle.getDescription();
         this.location = vehicle.getLocation();
+        this.locationX = vehicle.getLocationX();
+        this.locationY = vehicle.getLocationY();
         this.imageList = vehicle.getImages().stream().map(VehicleImage::getImageUrl).collect(Collectors.toList());
         this.vbrand = vehicle.getVbrand();
         this.vname = vehicle.getVname();
@@ -73,4 +81,5 @@ public class VehicleCommonResponseDto {
         this.transmission = vehicle.getTransmission();
         this.fuelEfficiency = vehicle.getFuelEfficiency();
     }
+
 }

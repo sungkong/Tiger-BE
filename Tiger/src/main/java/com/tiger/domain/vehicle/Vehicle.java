@@ -1,7 +1,6 @@
 package com.tiger.domain.vehicle;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tiger.domain.Timestamped;
 import com.tiger.domain.order.Orders;
 import com.tiger.domain.vehicle.dto.VehicleRequestDto;
@@ -12,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.ArrayList;
 
 @Builder
 @AllArgsConstructor
@@ -42,6 +40,15 @@ public class Vehicle extends Timestamped {
     // 상품 주소
     @Column(nullable = false)
     private String location;
+
+    // 상품 주소: 위도
+    @Column(nullable = false)
+    private Double locationX;
+
+    // 상품 주소: 경도
+    @Column(nullable = false)
+    private Double locationY;
+
 
     // 상품 활성/비활성
     @Column(nullable = false)
@@ -95,6 +102,8 @@ public class Vehicle extends Timestamped {
     // 주문목록
     @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Orders> orders;
+
+
 
     public void update(VehicleRequestDto requestDto, Long ownerId, String thumbnail) {
         this.ownerId = ownerId;

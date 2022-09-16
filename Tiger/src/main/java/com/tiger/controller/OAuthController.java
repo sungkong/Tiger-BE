@@ -40,6 +40,7 @@ public class OAuthController {
                 .body(CommonResponseDto.success(StatusCode.LOGIN_SUCCESS,
                         Map.of("email", member.getEmail(),
                                 "name", member.getName(),
-                                "tel", member.getTel())));
+                                "tel", member.getTel(),
+                                "profileImage", member.getProfileImage())));
     }
 }

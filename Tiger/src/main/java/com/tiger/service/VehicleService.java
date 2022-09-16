@@ -3,13 +3,11 @@ package com.tiger.service;
 import com.tiger.domain.member.Member;
 import com.tiger.domain.vehicle.Vehicle;
 import com.tiger.domain.vehicle.VehicleImage;
-import com.tiger.domain.vehicle.dto.VehicleDetailResponseDto;
-import com.tiger.domain.vehicle.dto.VehicleOwnerResponseDto;
-import com.tiger.domain.vehicle.dto.VehicleRequestDto;
-import com.tiger.domain.vehicle.dto.VehicleCommonResponseDto;
+import com.tiger.domain.vehicle.dto.*;
 import com.tiger.exception.CustomException;
 import com.tiger.exception.StatusCode;
 import com.tiger.repository.MemberRepository;
+import com.tiger.repository.VehicleCustomRepository;
 import com.tiger.repository.VehicleImageRepository;
 import com.tiger.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +30,8 @@ public class VehicleService {
     private final VehicleImageRepository vehicleImageRepository;
 
     private final MemberRepository memberRepository;
+
+    private final VehicleCustomRepository vehicleCustomRepository;
 
     private static final String DEFAULT_VEHICLE_IMAGE = "https://mygitpher.s3.ap-northeast-2.amazonaws.com/DEFAULT_VEHICLE_IMAGE.png";
 
@@ -47,6 +48,8 @@ public class VehicleService {
                 .price(requestDto.getPrice())
                 .description(requestDto.getDescription())
                 .location(requestDto.getLocation())
+                .locationX(requestDto.getLocationX())
+                .locationY(requestDto.getLocationY())
                 .isValid(true)
                 .thumbnail(imageUrlList.get(0))
                 .vbrand(requestDto.getVbrand())
@@ -89,6 +92,8 @@ public class VehicleService {
                     .price(vehicle.getPrice())
                     .description(vehicle.getDescription())
                     .location(vehicle.getLocation())
+                    .locationX(vehicle.getLocationX())
+                    .locationY(vehicle.getLocationY())
                     .imageList(vehicle.getImages().stream().map(VehicleImage::getImageUrl).collect(Collectors.toList()))
                     .vbrand(vehicle.getVbrand())
                     .vname(vehicle.getVname())
@@ -105,7 +110,7 @@ public class VehicleService {
     }
 
     // 상세 상세 조회
-    public VehicleDetailResponseDto readOne(Long vId) {
+    public VehicleDetailResponseDto readOne(Long vId, LocalDate startDate, LocalDate endDate) {
 
         Vehicle vehicle = vehicleRepository.findByIdAndIsValid(vId, true).orElseThrow(() -> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
@@ -115,7 +120,7 @@ public class VehicleService {
             throw new CustomException(StatusCode.USER_NOT_FOUND);
         });
 
-        return new VehicleDetailResponseDto(vehicle, member);
+        return new VehicleDetailResponseDto(vehicle, member, startDate, endDate);
     }
 
     // 등록한 상품 수정
@@ -133,11 +138,15 @@ public class VehicleService {
             throw new CustomException(StatusCode.USER_NOT_FOUND);
         });
 
-        return new VehicleDetailResponseDto(vehicle, member);
+        return new VehicleDetailResponseDto(vehicle, member, null, null);
     }
 
     // 등록한 상품 조회
     public List<VehicleOwnerResponseDto> readAllByOwnerId(Long ownerId) {
+
+        Member member = memberRepository.findByIdAndIsValid(ownerId, true).orElseThrow(()->{
+            throw new CustomException(StatusCode.USER_NOT_FOUND);
+        });
 
         List<Vehicle> vehicleList = vehicleRepository.findAllByOwnerIdAndIsValidOrderByCreatedAtDesc(ownerId, true).orElseThrow(()-> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
@@ -152,6 +161,7 @@ public class VehicleService {
                             .vid(vehicle.getId())
                             .thumbnail(vehicle.getThumbnail())
                             .vbrand(vehicle.getVbrand())
+                            .oname(member.getName())
                             .vname(vehicle.getVname())
                             .price(vehicle.getPrice())
                             .location(vehicle.getLocation())
@@ -226,4 +236,29 @@ public class VehicleService {
 
         return vehicle.getVname();
     }
+
+    public List<VehicleSearchResponseDto> search(VehicleSearch vehicleSearch) {
+
+        LocalDate startDate =  vehicleSearch.getStartDate();
+        LocalDate endDate = vehicleSearch.getEndDate();
+        String location = vehicleSearch.getLocation();
+        Double locationX = vehicleSearch.getLocationX();
+        Double locationY = vehicleSearch.getLocationY();
+        String type = vehicleSearch.getType();
+
+
+        // 나중에 List<VehicleCustomResponseDto>를 startDate과 endDate이 포함된 List<VehicleSearchResponseDto로 감싸기>
+
+        List<VehicleCustomResponseDto> vehicleCustomResponseDtos = vehicleCustomRepository.searchVehicle(startDate, endDate, locationX, locationY, type);
+
+
+        List<VehicleSearchResponseDto> vehicleSearchResponseDtos = new ArrayList<>();
+
+        for (VehicleCustomResponseDto vehicleCustomResponseDto : vehicleCustomResponseDtos) {
+            vehicleSearchResponseDtos.add(new VehicleSearchResponseDto(vehicleCustomResponseDto, startDate, endDate));
+        }
+
+        return vehicleSearchResponseDtos;
+    }
+
 }

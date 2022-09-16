@@ -41,17 +41,19 @@ public class SecurityConfig {
         http.headers().frameOptions().sameOrigin();
 
         http
-            .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            //
-            .authorizeRequests()
-            .antMatchers("/token/**").permitAll()
-            .antMatchers("/h2-console/**").permitAll()
-            .antMatchers("/api/member/**").permitAll()
-            .antMatchers("/user/**").permitAll()
-            .antMatchers(HttpMethod.GET, "/api/vehicle/**").permitAll()
-            .anyRequest().authenticated();
+                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                //
+                .authorizeRequests()
+                .antMatchers("/token/**").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/api/member/**").permitAll()
+                .antMatchers("/user/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/vehicle/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/vehicle/search").permitAll()
+                .anyRequest().authenticated();
 
         return http.build();
     }

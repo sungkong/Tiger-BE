@@ -107,6 +107,7 @@ public class MemberService {
 
     }
 
+    @Transactional
     public HashMap<String, Object> reissue(HttpServletRequest httpServletRequest) {
 
         String refreshToken = httpServletRequest.getHeader("RefreshToken");

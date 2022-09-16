@@ -54,7 +54,8 @@ public class MemberController {
                 .body(CommonResponseDto.success(StatusCode.LOGIN_SUCCESS,
                         Map.of("email", member.getEmail(),
                                 "name", member.getName(),
-                                "tel", member.getTel())));
+                                "tel", member.getTel(),
+                                "profileImage", member.getProfileImage())));
     }
 
     // 로그아웃
@@ -96,7 +97,8 @@ public class MemberController {
                 .body(CommonResponseDto.success(StatusCode.TOKEN_REISSUED,
                         Map.of("email", member.getEmail(),
                                 "name", member.getName(),
-                                "tel", member.getTel())));
+                                "tel", member.getTel(),
+                                "profileImage", member.getProfileImage())));
 
     }
 }
