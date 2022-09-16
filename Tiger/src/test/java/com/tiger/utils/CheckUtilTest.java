@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -75,22 +76,17 @@ class CheckUtilTest {
         // given
 
         HttpServletRequest request = null;
-        Long vehicleId = 3l;
+        Long vehicleId = 5l;
 
-        String imp_uid = "0011"; // 가맹점에서 생성/관리하는 고유 주문번호
+        String imp_uid = "0000"; // 가맹점에서 생성/관리하는 고유 주문번호
         String pay_method = PayMethod.CARD.toString(); // 결제 수단
-        int paid_amount = 20000; // 결제 금액
-        LocalDate start_date = LocalDate.parse("2022-09-20"); // 시작 날짜
-        LocalDate end_date = LocalDate.parse("2022-10-05"); // 종료 날짜
+        int paid_amount = 8000; // 결제 금액
+        LocalDate start_date = LocalDate.parse("2022-09-17"); // 시작 날짜
+        LocalDate end_date = LocalDate.parse("2022-10-01"); // 종료 날짜
         OrderRequestDto orderRequestDto = new OrderRequestDto(
                 imp_uid, pay_method, paid_amount, start_date, end_date);
         boolean flag = true;
 
-        // 상품의 오픈 기간인지 체크
-        // 10.1~10.5 , 10.11~10.15
-//        List<OpenDate> openDateList = openDateRepository.findAllByVehicleIdOrderByStartDate(vehicleId).orElseThrow(
-//                () -> new CustomException(OPENDATE_NOT_FOUND)
-//        );
         List<OpenDate> openDateList = openDateRepository.findAllByIncludeOrderDateMonth(vehicleId,
                 orderRequestDto.getStartDate(),
                 orderRequestDto.getEndDate()).orElseThrow(
@@ -99,20 +95,21 @@ class CheckUtilTest {
         Set<LocalDate> openDateSet = new HashSet<>();
         for (OpenDate openDate : openDateList) {
             LocalDate startDate = openDate.getStartDate();
-            openDateSet.add(openDate.getStartDate());
             int i=0;
-            //System.out.println("size = "+size);
-            while (i<=openDate.getEndDate().compareTo(openDate.getStartDate())){
+            while (i<=openDate.getStartDate().until(openDate.getEndDate(), ChronoUnit.DAYS)){
                 openDateSet.add(startDate.plusDays(i++));
+                System.out.println("size = " + openDate.getStartDate().until(openDate.getEndDate(), ChronoUnit.DAYS));
             }
+        }
+        for (LocalDate date : openDateSet) {
+            System.out.println("1단계 = " + date);
         }
 
         // 오픈 기간에서 이미 사용중인 기간 제외하기
         List<Orders> ordersList = orderRepository.findAllByVehicleId(vehicleId).orElse(null);
         for (Orders order : ordersList) {
             int j=0;
-            int size = order.getEndDate().compareTo(order.getStartDate());
-            while (j<=size){
+            while (j<=order.getStartDate().until(order.getEndDate(), ChronoUnit.DAYS)){
                 openDateSet.remove(order.getStartDate().plusDays(j++));
             }
         }
@@ -128,8 +125,8 @@ class CheckUtilTest {
             System.out.println("예약 가능 날짜 = " + date);
         }
         //assertThat(openDateSet.size()).isEqualTo(32);
-        assertThat(flag).isFalse();
-        //assertThat(flag).isTrue();
+        //assertThat(flag).isFalse();
+        assertThat(flag).isTrue();
 
     }
 
