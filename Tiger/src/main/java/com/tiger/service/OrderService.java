@@ -109,7 +109,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public  List<String> getReservedDateList(Long vid){
-        List<Orders> findOrdersList = orderRepository.findAllByVehicleIdAndStatusNotOrderByStartDateAsc(vid,Status.RETURN).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));
+        List<Orders> findOrdersList = orderRepository.findAllByVehicleIdAndStatusNotOrderByStartDateAsc(vid,Status.CANCEL).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));
 
         List<LocalDate> dtoList = new ArrayList<>();
 
