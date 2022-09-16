@@ -21,4 +21,6 @@ public class IncomeResponseDto {
         this.date = date;
         this.sum = sum;
     }
+
 }
+

@@ -14,6 +14,10 @@ import com.tiger.exception.CustomException;
 import com.tiger.repository.*;
 import com.tiger.utils.CheckUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +52,8 @@ public class OrderService {
         checkUtil.validateOrderDate(vehicleId, orderRequestDto);
         // 주문 금액 검증
         checkUtil.validatePrice(orderRequestDto, vehicle);
+        // 본인 상품 주문 블락
+        checkUtil.validateSelfOrder(member, vehicle);
         // Dto -> Domain
         Orders order = Orders.builder()
                 .member(member)
@@ -225,5 +231,21 @@ public class OrderService {
         return CommonResponseDto.success(INCOMELIST_SUCCESS,
                 orderCustomRepository.getIncomeListMonth(owner.getId(), LocalDate.now()));
     }
+
+    /**
+     * 매일 정오 예약 당일이 된 상품 status = use로 변경하는 스케줄링
+     * 추후 + 알림까지 추가하여 배치로 적용할 예정
+     * 매일 24시 0분 1초에 실행
+     * */
+    @Scheduled(cron = "1 0 0 * * *", zone="Asia/Seoul")
+    public void changeStatusUse(){
+        List<Orders> list = orderRepository.findAllByStartDateEquals(LocalDate.now()).get();
+
+        for(int i=0; i<list.size(); i++){
+            Orders order = list.get(i);
+            order.setStatus(Status.USE);
+        }
+    }
+
 
 }

@@ -14,8 +14,7 @@ class TigerApplicationTests {
     @Test
     void contextLoads() {
         LocalDate now = LocalDate.now();
-        System.out.println(now.compareTo(LocalDate.parse("2022-09-04")));
-        System.out.println(new Date());
+        System.out.println(now.compareTo(LocalDate.parse("2022-09-01")));
     }
 
 }

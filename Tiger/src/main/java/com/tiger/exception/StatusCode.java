@@ -49,7 +49,8 @@ public enum StatusCode {
     INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 JWT 토큰 입니다"),
 
     /* 403 FORBIDDEN : 컨텐츠에 접근할 권리가 없음 */
-
+    EXPIRED_DATE_FORBIDDEN(HttpStatus.FORBIDDEN, "이전 날짜들을 예약할 수 없습니다."),
+    SELF_ORDER_FORBIDDEN(HttpStatus.FORBIDDEN, "본인 상품은 주문할 수 없습니다."),
 
 
     /* 404 NOT_FOUND : Resource를 찾을 수 없음 */

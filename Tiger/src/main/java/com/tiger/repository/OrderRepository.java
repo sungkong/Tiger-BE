@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,9 +15,11 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
 
     Optional<List<Orders>> findAllByMemberId(Long memberId);
 
-    Optional<List<Orders>> findAllByVehicleId(long vehicleId);
+    Optional<List<Orders>> findAllByVehicleId(Long vehicleId);
 
     Optional<List<Orders>> findAllByVehicleIdAndStatusNotOrderByStartDateAsc(Long vid,Status status);
+
+    Optional<List<Orders>> findAllByVehicleIdAndStatusNot(Long vehicleId, Status status);
 
     // N+1문제 발생
     // 주문리스트 (렌터)
@@ -31,6 +34,7 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
                                              @Param("limit") int limit,
                                              @Param("offset") int offset);
 
-
+    // 현재 날짜와 예약 시작날짜가 같은 상품들 조회하기
+    Optional<List<Orders>> findAllByStartDateEquals(LocalDate now);
 
 }
