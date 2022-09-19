@@ -174,6 +174,7 @@ public class OrderService {
     }
 
     // 반납 확인
+    @Transactional
     public CommonResponseDto<?> returnVehicle(HttpServletRequest request, Long orderId){
 
 

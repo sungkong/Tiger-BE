@@ -15,6 +15,7 @@ public class OrderResponseDto {
     private Long oid; // 주문 식별번호
     private Long vid; // 상품 식별번호
     private String vname; // 상품 이름
+    private String vbrand; // 상품 브랜드
     private int price; // 가격
     private String thumbnail; // 썸네일
     private String location; // 위치
@@ -23,10 +24,11 @@ public class OrderResponseDto {
     private LocalDateTime createdAt; // 등록 날짜
 
     @QueryProjection
-    public OrderResponseDto(Long oid, Long vid, String vname, int price, String thumbnail, String location, LocalDate startDate, LocalDate endDate, LocalDateTime createdAt) {
+    public OrderResponseDto(Long oid, Long vid, String vname, String vbrand, int price, String thumbnail, String location, LocalDate startDate, LocalDate endDate, LocalDateTime createdAt) {
         this.oid = oid;
         this.vid = vid;
         this.vname = vname;
+        this.vbrand = vbrand;
         this.price = price;
         this.thumbnail = thumbnail;
         this.location = location;
@@ -39,6 +41,7 @@ public class OrderResponseDto {
         this.oid = orders.getId();
         this.vid = orders.getVehicle().getId();
         this.vname = orders.getVehicle().getVname();
+        this.vbrand = orders.getVehicle().getVbrand();
         this.price = orders.getTotalAmount();
         this.thumbnail = orders.getVehicle().getThumbnail();
         this.location = orders.getVehicle().getLocation();
