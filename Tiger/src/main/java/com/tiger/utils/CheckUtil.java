@@ -87,7 +87,7 @@ public class CheckUtil {
     @Transactional(readOnly = true)
     public void validatePrice(OrderRequestDto orderRequestDto, Vehicle vehicle){
         if(orderRequestDto.getPaidAmount() !=
-                vehicle.getPrice()*(orderRequestDto.getEndDate().compareTo(orderRequestDto.getStartDate())+1)){
+                vehicle.getPrice()*(orderRequestDto.getStartDate().until(orderRequestDto.getEndDate(), ChronoUnit.DAYS)+1)){
             throw new CustomException(StatusCode.PRICE_NOT_FOUND);
         }
     }

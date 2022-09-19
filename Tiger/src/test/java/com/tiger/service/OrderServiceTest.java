@@ -78,8 +78,6 @@ class OrderServiceTest {
             System.out.println("now.compareTo(orderRequestDto.getStartDate() = " + now.compareTo(orderRequestDto.getStartDate()));
             throw new CustomException(EXPIRED_DATE_FORBIDDEN);
         }
-        // 자기 상품은 주문 못하게 막기
-
 
         //then
 

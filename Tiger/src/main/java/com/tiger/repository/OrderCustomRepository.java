@@ -28,7 +28,7 @@ public class OrderCustomRepository {
 
     // 판매리스트(오너)
     public List<OrderResponseDto> getOrderListOwner(Long ownerId, String status, int limit, int offset) {
-        return jpaQueryFactory.select(new QOrderResponseDto(order.id, vehicle.id, vehicle.vname, order.totalAmount,
+        return jpaQueryFactory.select(new QOrderResponseDto(order.id, vehicle.id, vehicle.vname, vehicle.vbrand, order.totalAmount,
                 vehicle.thumbnail, vehicle.location, order.startDate, order.endDate, order.createdAt))
                 .from(order)
                 .join(order.vehicle, vehicle)
