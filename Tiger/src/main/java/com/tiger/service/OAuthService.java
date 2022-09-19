@@ -9,6 +9,8 @@ import com.tiger.domain.UserDetailsImpl;
 import com.tiger.domain.member.Member;
 import com.tiger.domain.member.dto.KakaoUserInfoDto;
 import com.tiger.repository.MemberRepository;
+import com.tiger.utils.GenerateRandomUtil;
+import com.tiger.utils.MapUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -33,29 +35,32 @@ public class OAuthService {
 
     private final MemberRepository memberRepository;
 
+    private final GenerateRandomUtil generateRandom;
+
+    private final MapUtil map;
+
 
     // 카카오 로그인 관련 정보
     @Value("${kakao.access-token.client-id}") private String CLIENT_ID;
     @Value("${kakao.access-token.client-secret}") private String CLIENT_SECRET;
     @Value("${kakao.access-token.redirect-uri}") private String REDIRECT_URI;
 
+    // 카카오 로그인
     public HashMap<String, Object> kakaoLogin(String authorityCode) throws JsonProcessingException {
 
+        // 엑세스 토큰 요청
         String accessToken = getAccessToken(authorityCode);
-
+        // 카카오 사용자 정보 요청
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+        // 필요시 회원가입
+        Member member = registerKakaoUserIfNeeded(kakaoUserInfo);
+        // 강제 로그인
+        TokenDto token = forceLogin(member);
 
-        Member kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
-
-        TokenDto tokenDto = forceLogin(kakaoUser);
-
-        HashMap<String, Object> tokenAndMember = new HashMap<>();
-        tokenAndMember.put("Token", tokenDto);
-        tokenAndMember.put("Member", kakaoUser);
-
-        return tokenAndMember;
+        return map.tokenAndMember(token, member);
     }
 
+    // 엑세스 토큰 요청
     private String getAccessToken(String code) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -84,6 +89,7 @@ public class OAuthService {
 
     }
 
+    // 카카오 사용자 정보 요청
     private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
 
         HttpHeaders headers = new HttpHeaders();
@@ -116,6 +122,7 @@ public class OAuthService {
         return new KakaoUserInfoDto(id, nickname, email, profileImage);
     }
 
+    // 필요시 회원가입
     private Member registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
 
         String kakaoUserId = kakaoUserInfo.getKakaoUserId();
@@ -133,9 +140,7 @@ public class OAuthService {
 
     private Member getNewMemberByConvertingKakaoUserToMember(KakaoUserInfoDto kakaoUserInfo) {
 
-        String a = "-" + ((int) ((Math.random() * (9999 - 1000 + 1)) + 1000));
-        String b = "-" + ((int) ((Math.random() * (9999 - 1000 + 1)) + 1000));
-        String tel = "050" + a + b;
+        String tel = generateRandom.tel();
 
         return Member.builder()
                 .email(kakaoUserInfo.getEmail())
@@ -148,6 +153,7 @@ public class OAuthService {
                 .build();
     }
 
+    // 강제 로그인
     private TokenDto forceLogin(Member kakaoUser) {
 
         UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);
@@ -155,4 +161,5 @@ public class OAuthService {
 
         return tokenProvider.generateTokenDto(authentication);
     }
+
 }

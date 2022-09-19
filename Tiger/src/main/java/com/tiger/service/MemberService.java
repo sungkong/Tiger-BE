@@ -11,6 +11,8 @@ import com.tiger.exception.CustomException;
 import com.tiger.exception.StatusCode;
 import com.tiger.repository.MemberRepository;
 import com.tiger.repository.RefreshTokenRepository;
+import com.tiger.utils.GenerateRandomUtil;
+import com.tiger.utils.MapUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -34,6 +35,10 @@ public class MemberService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
+    private final GenerateRandomUtil generateRandom;
+
+    private final MapUtil map;
+
     private static final String DEFAULT_PROFILE_IMAGE = "https://mygitpher.s3.ap-northeast-2.amazonaws.com/DEFAULT_PROFILE_IMAGE.png";
 
 
@@ -43,9 +48,7 @@ public class MemberService {
 
         String password = passwordEncoder.encode(registerRequestDto.getPassword());
 
-        String a = "-" + ((int) ((Math.random() * (9999 - 1000 + 1)) + 1000));
-        String b = "-" + ((int) ((Math.random() * (9999 - 1000 + 1)) + 1000));
-        String tel = "050" + a + b;
+        String tel = generateRandom.tel();
 
         Member member = Member.builder()
                 .email(registerRequestDto.getEmail())
@@ -79,7 +82,7 @@ public class MemberService {
     @Transactional
     public String logout(HttpServletRequest httpServletRequest) {
 
-        String refreshToken = httpServletRequest.getHeader("RefreshToken");
+        String refreshToken = extractRefreshToken(httpServletRequest);
 
         if (!tokenProvider.validateToken(refreshToken)) {
             throw new CustomException(StatusCode.INVALID_AUTH_TOKEN);
@@ -110,7 +113,7 @@ public class MemberService {
     @Transactional
     public HashMap<String, Object> reissue(HttpServletRequest httpServletRequest) {
 
-        String refreshToken = httpServletRequest.getHeader("RefreshToken");
+        String refreshToken = extractRefreshToken(httpServletRequest);
 
         // 리프레시 토큰 검증
         if (!tokenProvider.validateToken(refreshToken)) {
@@ -128,14 +131,13 @@ public class MemberService {
 
         TokenDto token = tokenProvider.generateTokenDto(authentication);
 
-        HashMap<String, Object> tokenAndMember = new HashMap<>();
-        tokenAndMember.put("Token", token);
-        tokenAndMember.put("Member", member);
-
-        return tokenAndMember;
+        return map.tokenAndMember(token, member);
 
     }
 
+    public String extractRefreshToken(HttpServletRequest httpServletRequest) {
+        return httpServletRequest.getHeader("RefreshToken");
+    }
 
 }
 

@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+
+/**
+ * https://earth-95.tistory.com/117 참고
+ */
 @Service
 @RequiredArgsConstructor
 public class AwsS3Service {
@@ -26,7 +30,7 @@ public class AwsS3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    private final AmazonS3Client amazonS3Client; // AmazonS3 ---> AmazonS3Client
+    private final AmazonS3Client amazonS3Client;
 
     public List<String> uploadFile(List<MultipartFile> multipartFile) {
         List<String> fileUrlList = new ArrayList<>();

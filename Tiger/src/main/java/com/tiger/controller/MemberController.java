@@ -80,7 +80,7 @@ public class MemberController {
         return CommonResponseDto.success(StatusCode.USABLE_EMAIL, "");
     }
 
-
+    // 토큰 재발급
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest) {
 

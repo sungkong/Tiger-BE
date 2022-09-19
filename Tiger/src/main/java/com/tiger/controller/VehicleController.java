@@ -42,7 +42,7 @@ public class VehicleController {
         return CommonResponseDto.success(StatusCode.VEHICLE_CREATED, vehicle.getVname());
     }
 
-    // 수입 상품 조회 (메인페이지)
+    // 수입 상품 조회
     @GetMapping
     public CommonResponseDto<?> readAllByTypeImported() {
         String type = "수입";
@@ -60,16 +60,11 @@ public class VehicleController {
 
         VehicleDetailResponseDto vehicleDetailResponseDto = vehicleService.readOne(vId, startDate, endDate);
 
-        HashMap<String, Object> vehicleDetailResponseDtoAndStartDateAndEndDate = new HashMap<>();
-        vehicleDetailResponseDtoAndStartDateAndEndDate.put("vehicleList", vehicleDetailResponseDto);
-        vehicleDetailResponseDtoAndStartDateAndEndDate.put("startDate", startDate);
-        vehicleDetailResponseDtoAndStartDateAndEndDate.put("endDate", endDate);
-
-        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleDetailResponseDtoAndStartDateAndEndDate);
+        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleDetailResponseDto);
     }
 
 
-    //등록한 상품 조회 (오너 마이페이지)
+    // 등록한 상품 조회
     @GetMapping("/management")
     public CommonResponseDto<?> readAllByOwnerId(@AuthenticationPrincipal UserDetails userDetails) {
 
@@ -117,17 +112,13 @@ public class VehicleController {
         return CommonResponseDto.success(StatusCode.VEHICLE_DELETED, name);
     }
 
+    // 상품 검색
     @PostMapping("/search")
     public CommonResponseDto<?> search(@RequestBody VehicleSearch vehicleSearch) {
 
         List<VehicleSearchResponseDto> vehicleSearchResponseDtos = vehicleService.search(vehicleSearch);
 
-        HashMap<String, Object> vehicleCustomResponseDtosAndStartDateAndEndDate = new HashMap<>();
-        vehicleCustomResponseDtosAndStartDateAndEndDate.put("vehicleList", vehicleSearchResponseDtos);
-        vehicleCustomResponseDtosAndStartDateAndEndDate.put("startDate", vehicleSearch.getStartDate());
-        vehicleCustomResponseDtosAndStartDateAndEndDate.put("endDate", vehicleSearch.getEndDate());
-
-        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleCustomResponseDtosAndStartDateAndEndDate);
+        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleSearchResponseDtos);
     }
 
 }

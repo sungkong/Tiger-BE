@@ -23,7 +23,7 @@ public class OAuthController {
 
     private final OAuthService oAuthService;
 
-
+    // 카카오 로그인
     @GetMapping("/user/kakao/callback")
     public ResponseEntity<?> kakaoLogin(@RequestParam(value = "code") String authorityCode) throws JsonProcessingException {
 

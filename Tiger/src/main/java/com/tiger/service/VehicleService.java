@@ -28,12 +28,10 @@ public class VehicleService {
     private final VehicleRepository vehicleRepository;
     private final AwsS3Service awsS3Service;
     private final VehicleImageRepository vehicleImageRepository;
-
     private final MemberRepository memberRepository;
-
     private final VehicleCustomRepository vehicleCustomRepository;
-
     private static final String DEFAULT_VEHICLE_IMAGE = "https://mygitpher.s3.ap-northeast-2.amazonaws.com/DEFAULT_VEHICLE_IMAGE.png";
+
 
     // 상품 등록
     @Transactional
@@ -62,14 +60,7 @@ public class VehicleService {
                 .fuelEfficiency(requestDto.getFuelEfficiency())
                 .build();
 
-        for (String imageUrl : imageUrlList) {
-            vehicleImageRepository.save(
-                VehicleImage.builder()
-                        .imageUrl(imageUrl)
-                        .vehicle(vehicle)
-                        .build()
-            );
-        }
+        saveVehicleImages(imageUrlList, vehicle);
 
         return vehicleRepository.save(vehicle);
     }
@@ -112,13 +103,9 @@ public class VehicleService {
     // 상세 상세 조회
     public VehicleDetailResponseDto readOne(Long vId, LocalDate startDate, LocalDate endDate) {
 
-        Vehicle vehicle = vehicleRepository.findByIdAndIsValid(vId, true).orElseThrow(() -> {
-            throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
-        });
+        Vehicle vehicle = findVehicleByVid(vId);
 
-        Member member = memberRepository.findByIdAndIsValid(vehicle.getOwnerId(), true).orElseThrow(()->{
-            throw new CustomException(StatusCode.USER_NOT_FOUND);
-        });
+        Member member = findMemberByMid(vehicle.getOwnerId());
 
         return new VehicleDetailResponseDto(vehicle, member, startDate, endDate);
     }
@@ -126,17 +113,13 @@ public class VehicleService {
     // 등록한 상품 수정
     public VehicleDetailResponseDto updatePage(Long vId, Long ownerId) {
 
-        Vehicle vehicle = vehicleRepository.findByIdAndIsValid(vId, true).orElseThrow(() -> {
-            throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
-        });
+        Vehicle vehicle = findVehicleByVid(vId);
 
         if (!vehicle.getOwnerId().equals(ownerId)) {
             throw new CustomException(StatusCode.INVALID_AUTH_UPDATE);
         }
 
-        Member member = memberRepository.findByIdAndIsValid(ownerId, true).orElseThrow(()->{
-            throw new CustomException(StatusCode.USER_NOT_FOUND);
-        });
+        Member member = findMemberByMid(ownerId);
 
         return new VehicleDetailResponseDto(vehicle, member, null, null);
     }
@@ -144,9 +127,7 @@ public class VehicleService {
     // 등록한 상품 조회
     public List<VehicleOwnerResponseDto> readAllByOwnerId(Long ownerId) {
 
-        Member member = memberRepository.findByIdAndIsValid(ownerId, true).orElseThrow(()->{
-            throw new CustomException(StatusCode.USER_NOT_FOUND);
-        });
+        Member member = findMemberByMid(ownerId);
 
         List<Vehicle> vehicleList = vehicleRepository.findAllByOwnerIdAndIsValidOrderByCreatedAtDesc(ownerId, true).orElseThrow(()-> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
@@ -176,35 +157,19 @@ public class VehicleService {
     @Transactional
     public String update(Long vId, VehicleRequestDto requestDto, Long ownerId) {
 
-        Vehicle vehicle = vehicleRepository.findByIdAndIsValid(vId, true).orElseThrow(()->{
-            throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
-        });
+        Vehicle vehicle = findVehicleByVid(vId);
 
         if (!vehicle.getOwnerId().equals(ownerId)) {
             throw new CustomException(StatusCode.INVALID_AUTH_UPDATE);
         }
 
-        List<VehicleImage> vehicleImages = vehicleImageRepository.findAllByVehicle_Id(vId);
-        for (VehicleImage vehicleImage : vehicleImages) {
-
-            String imageUrl = vehicleImage.getImageUrl();
-            String key = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
-            awsS3Service.deleteFile(key);
-        }
-        vehicleImageRepository.deleteAllByVehicle_Id(vId);
+        deleteAllImages(vId);
 
         List<MultipartFile> multipartFiles = requestDto.getImageList();
 
         List<String> imageUrlList = awsS3Service.uploadFile(multipartFiles);
 
-        for (String imageUrl : imageUrlList) {
-            vehicleImageRepository.save(
-                    VehicleImage.builder()
-                            .imageUrl(imageUrl)
-                            .vehicle(vehicle)
-                            .build()
-            );
-        }
+        saveVehicleImages(imageUrlList, vehicle);
 
         vehicle.update(requestDto, ownerId, imageUrlList.get(0));
 
@@ -215,42 +180,30 @@ public class VehicleService {
     @Transactional
     public String delete(Long vId, Long ownerId) {
 
-        Vehicle vehicle = vehicleRepository.findByIdAndIsValid(vId, true).orElseThrow(()->{
-            throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
-        });
+        Vehicle vehicle = findVehicleByVid(vId);
 
         if (!vehicle.getOwnerId().equals(ownerId)) {
             throw new CustomException(StatusCode.INVALID_AUTH_UPDATE);
         }
 
-        List<VehicleImage> vehicleImages = vehicleImageRepository.findAllByVehicle_Id(vId);
-        for (VehicleImage vehicleImage : vehicleImages) {
-
-            String imageUrl = vehicleImage.getImageUrl();
-            String key = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
-            awsS3Service.deleteFile(key);
-        }
-        vehicleImageRepository.deleteAllByVehicle_Id(vId);
+        deleteAllImages(vId);
 
         vehicle.delete(DEFAULT_VEHICLE_IMAGE);
 
         return vehicle.getVname();
     }
 
+    // 상품 검색
     public List<VehicleSearchResponseDto> search(VehicleSearch vehicleSearch) {
 
         LocalDate startDate =  vehicleSearch.getStartDate();
         LocalDate endDate = vehicleSearch.getEndDate();
-        String location = vehicleSearch.getLocation();
+//        String location = vehicleSearch.getLocation();
         Double locationX = vehicleSearch.getLocationX();
         Double locationY = vehicleSearch.getLocationY();
         String type = vehicleSearch.getType();
 
-
-        // 나중에 List<VehicleCustomResponseDto>를 startDate과 endDate이 포함된 List<VehicleSearchResponseDto로 감싸기>
-
         List<VehicleCustomResponseDto> vehicleCustomResponseDtos = vehicleCustomRepository.searchVehicle(startDate, endDate, locationX, locationY, type);
-
 
         List<VehicleSearchResponseDto> vehicleSearchResponseDtos = new ArrayList<>();
 
@@ -260,5 +213,44 @@ public class VehicleService {
 
         return vehicleSearchResponseDtos;
     }
+
+
+
+
+
+    public Vehicle findVehicleByVid(Long vId) {
+        return vehicleRepository.findByIdAndIsValid(vId, true).orElseThrow(() -> {
+            throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
+        });
+    }
+
+    public Member findMemberByMid(Long mId) {
+        return memberRepository.findByIdAndIsValid(mId, true).orElseThrow(() -> {
+            throw new CustomException(StatusCode.USER_NOT_FOUND);
+        });
+    }
+
+    public void deleteAllImages(Long vId) {
+        List<VehicleImage> vehicleImages = vehicleImageRepository.findAllByVehicle_Id(vId);
+        for (VehicleImage vehicleImage : vehicleImages) {
+
+            String imageUrl = vehicleImage.getImageUrl();
+            String key = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
+            awsS3Service.deleteFile(key);
+        }
+        vehicleImageRepository.deleteAllByVehicle_Id(vId);
+    }
+
+    public void saveVehicleImages(List<String> imageUrlList, Vehicle vehicle) {
+        for (String imageUrl : imageUrlList) {
+            vehicleImageRepository.save(
+                    VehicleImage.builder()
+                            .imageUrl(imageUrl)
+                            .vehicle(vehicle)
+                            .build()
+            );
+        }
+    }
+
 
 }
