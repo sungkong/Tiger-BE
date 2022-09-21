@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -71,9 +72,13 @@ public class VehicleService {
     }
 
     // 종류별 상품 조회
-    public List<VehicleCommonResponseDto> readAllByType(String type) {
+    public List<VehicleCommonResponseDto> readAllByType(String type, HttpServletRequest request) {
 
-        Member member = checkUtil.validateMember();
+        Member member = null;
+        if (null != request.getHeader("RefreshToken") && null != request.getHeader("Authorization")) {
+            member = checkUtil.validateMember();
+        }
+
         List<Vehicle> vehicleList = vehicleRepository.findAllByTypeAndIsValidOrderByModifiedAtDesc(type, true).orElseThrow(()-> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
         });
@@ -82,8 +87,10 @@ public class VehicleService {
 
         for (Vehicle vehicle : vehicleList) {
             VehicleCommonResponseDto vehicleCommonResponseDto = new VehicleCommonResponseDto(vehicle);
-            if(heartRepository.findByMemberAndVehicle(member, vehicle).isPresent()){
-                vehicleCommonResponseDto.setHeart(true);
+            if(member != null){
+                if(heartRepository.findByMemberAndVehicle(member, vehicle).isPresent()){
+                    vehicleCommonResponseDto.setHeart(true);
+                }
             }
             vehicleCommonResponseDtos.add(vehicleCommonResponseDto);
 //                VehicleCommonResponseDto.builder()
