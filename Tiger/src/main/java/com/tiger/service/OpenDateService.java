@@ -126,6 +126,9 @@ public class OpenDateService {
         List<String> stringList = new ArrayList<>();
         for (LocalDate revDate : dtoList) {
             String reservedDate = revDate.format(DateTimeFormatter.ofPattern("yyyy-M-d"));
+
+            if(revDate.isBefore(LocalDate.now()))
+                continue;
             stringList.add(reservedDate);
         }
         return stringList;
