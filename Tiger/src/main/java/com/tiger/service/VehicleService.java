@@ -1,16 +1,17 @@
 package com.tiger.service;
 
+import com.tiger.domain.UserDetailsImpl;
 import com.tiger.domain.member.Member;
 import com.tiger.domain.vehicle.Vehicle;
 import com.tiger.domain.vehicle.VehicleImage;
 import com.tiger.domain.vehicle.dto.*;
 import com.tiger.exception.CustomException;
 import com.tiger.exception.StatusCode;
-import com.tiger.repository.MemberRepository;
-import com.tiger.repository.VehicleCustomRepository;
-import com.tiger.repository.VehicleImageRepository;
-import com.tiger.repository.VehicleRepository;
+import com.tiger.repository.*;
+import com.tiger.utils.CheckUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tiger.exception.StatusCode.USER_NOT_FOUND;
+
 @RequiredArgsConstructor
 @Service
 public class VehicleService {
@@ -30,6 +33,8 @@ public class VehicleService {
     private final VehicleImageRepository vehicleImageRepository;
     private final MemberRepository memberRepository;
     private final VehicleCustomRepository vehicleCustomRepository;
+    private final HeartRepository heartRepository;
+    private final CheckUtil checkUtil;
     private static final String DEFAULT_VEHICLE_IMAGE = "https://mygitpher.s3.ap-northeast-2.amazonaws.com/DEFAULT_VEHICLE_IMAGE.png";
 
 
@@ -68,6 +73,7 @@ public class VehicleService {
     // 종류별 상품 조회
     public List<VehicleCommonResponseDto> readAllByType(String type) {
 
+        Member member = checkUtil.validateMember();
         List<Vehicle> vehicleList = vehicleRepository.findAllByTypeAndIsValidOrderByModifiedAtDesc(type, true).orElseThrow(()-> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
         });
@@ -75,26 +81,29 @@ public class VehicleService {
         List<VehicleCommonResponseDto> vehicleCommonResponseDtos = new ArrayList<>();
 
         for (Vehicle vehicle : vehicleList) {
-
-            vehicleCommonResponseDtos.add(
-                VehicleCommonResponseDto.builder()
-                    .vid(vehicle.getId())
-                    .ownerId(vehicle.getOwnerId())
-                    .price(vehicle.getPrice())
-                    .description(vehicle.getDescription())
-                    .location(vehicle.getLocation())
-                    .locationX(vehicle.getLocationX())
-                    .locationY(vehicle.getLocationY())
-                    .imageList(vehicle.getImages().stream().map(VehicleImage::getImageUrl).collect(Collectors.toList()))
-                    .vbrand(vehicle.getVbrand())
-                    .vname(vehicle.getVname())
-                    .type(vehicle.getType())
-                    .years(vehicle.getYears())
-                    .fuelType(vehicle.getFuelType())
-                    .passengers(vehicle.getPassengers())
-                    .transmission(vehicle.getTransmission())
-                    .fuelEfficiency(vehicle.getFuelEfficiency())
-                    .build());
+            VehicleCommonResponseDto vehicleCommonResponseDto = new VehicleCommonResponseDto(vehicle);
+            if(heartRepository.findByMemberAndVehicle(member, vehicle).isPresent()){
+                vehicleCommonResponseDto.setHeart(true);
+            }
+            vehicleCommonResponseDtos.add(vehicleCommonResponseDto);
+//                VehicleCommonResponseDto.builder()
+//                    .vid(vehicle.getId())
+//                    .ownerId(vehicle.getOwnerId())
+//                    .price(vehicle.getPrice())
+//                    .description(vehicle.getDescription())
+//                    .location(vehicle.getLocation())
+//                    .locationX(vehicle.getLocationX())
+//                    .locationY(vehicle.getLocationY())
+//                    .imageList(vehicle.getImages().stream().map(VehicleImage::getImageUrl).collect(Collectors.toList()))
+//                    .vbrand(vehicle.getVbrand())
+//                    .vname(vehicle.getVname())
+//                    .type(vehicle.getType())
+//                    .years(vehicle.getYears())
+//                    .fuelType(vehicle.getFuelType())
+//                    .passengers(vehicle.getPassengers())
+//                    .transmission(vehicle.getTransmission())
+//                    .fuelEfficiency(vehicle.getFuelEfficiency())
+//                    .build());
 
         }
         return vehicleCommonResponseDtos;
@@ -107,7 +116,11 @@ public class VehicleService {
 
         Member member = findMemberByMid(vehicle.getOwnerId());
 
-        return new VehicleDetailResponseDto(vehicle, member, startDate, endDate);
+        VehicleDetailResponseDto vehicleDetailResponseDto = new VehicleDetailResponseDto(vehicle, member, startDate, endDate);
+        if(heartRepository.findByMemberAndVehicle(member, vehicle).isPresent()){
+            vehicleDetailResponseDto.setHeart(true);
+        }
+        return vehicleDetailResponseDto;
     }
 
     // 등록한 상품 수정
@@ -196,6 +209,12 @@ public class VehicleService {
     // 상품 검색
     public List<VehicleSearchResponseDto> search(VehicleSearch vehicleSearch) {
 
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Member member = null;
+        if(principal != null){
+            UserDetails userDetails = (UserDetails) principal;
+            member = ((UserDetailsImpl) userDetails).getMember();
+        }
         LocalDate startDate =  vehicleSearch.getStartDate();
         LocalDate endDate = vehicleSearch.getEndDate();
 //        String location = vehicleSearch.getLocation();
@@ -208,15 +227,15 @@ public class VehicleService {
         List<VehicleSearchResponseDto> vehicleSearchResponseDtos = new ArrayList<>();
 
         for (VehicleCustomResponseDto vehicleCustomResponseDto : vehicleCustomResponseDtos) {
+            VehicleSearchResponseDto vehicleSearchResponseDto = new VehicleSearchResponseDto(vehicleCustomResponseDto, startDate, endDate);
+            if(heartRepository.findByMemberAndVehicleId(member, vehicleSearchResponseDto.getVid()).isPresent()){
+                vehicleSearchResponseDto.setHeart(true);
+            }
             vehicleSearchResponseDtos.add(new VehicleSearchResponseDto(vehicleCustomResponseDto, startDate, endDate));
         }
 
         return vehicleSearchResponseDtos;
     }
-
-
-
-
 
     public Vehicle findVehicleByVid(Long vId) {
         return vehicleRepository.findByIdAndIsValid(vId, true).orElseThrow(() -> {

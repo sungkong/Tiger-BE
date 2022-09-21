@@ -4,6 +4,7 @@ package com.tiger.domain.vehicle;
 import com.tiger.domain.Timestamped;
 import com.tiger.domain.order.Orders;
 import com.tiger.domain.vehicle.dto.VehicleRequestDto;
+import com.tiger.domain.vehicle.heart.Heart;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -125,5 +126,9 @@ public class Vehicle extends Timestamped {
         this.thumbnail = defaultThumbnail;
         this.isValid = false;
     }
+
+    // 좋아요 목록
+    @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Heart> heartList;
 
 }
