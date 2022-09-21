@@ -57,9 +57,10 @@ public class VehicleController {
     @GetMapping("/{vId}")
     public CommonResponseDto<?> readOne(@PathVariable Long vId,
                                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+                                        HttpServletRequest request) {
 
-        VehicleDetailResponseDto vehicleDetailResponseDto = vehicleService.readOne(vId, startDate, endDate);
+        VehicleDetailResponseDto vehicleDetailResponseDto = vehicleService.readOne(vId, startDate, endDate, request);
 
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleDetailResponseDto);
     }
@@ -115,9 +116,9 @@ public class VehicleController {
 
     // 상품 검색
     @PostMapping("/search")
-    public CommonResponseDto<?> search(@RequestBody VehicleSearch vehicleSearch) {
+    public CommonResponseDto<?> search(@RequestBody VehicleSearch vehicleSearch, HttpServletRequest request) {
 
-        List<VehicleSearchResponseDto> vehicleSearchResponseDtos = vehicleService.search(vehicleSearch);
+        List<VehicleSearchResponseDto> vehicleSearchResponseDtos = vehicleService.search(vehicleSearch, request);
 
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleSearchResponseDtos);
     }
