@@ -22,9 +22,10 @@ public class OrderResponseDto {
     private LocalDate startDate; // 시작 날짜
     private LocalDate endDate; // 종료 날짜
     private LocalDateTime createdAt; // 등록 날짜
+    private Long ownerId; // 오너 ID
 
     @QueryProjection
-    public OrderResponseDto(Long oid, Long vid, String vname, String vbrand, int price, String thumbnail, String location, LocalDate startDate, LocalDate endDate, LocalDateTime createdAt) {
+    public OrderResponseDto(Long oid, Long vid, String vname, String vbrand, int price, String thumbnail, String location, LocalDate startDate, LocalDate endDate, LocalDateTime createdAt, Long ownerId) {
         this.oid = oid;
         this.vid = vid;
         this.vname = vname;
@@ -35,6 +36,7 @@ public class OrderResponseDto {
         this.startDate = startDate;
         this.endDate = endDate;
         this.createdAt = createdAt;
+        this.ownerId = ownerId;
     }
 
     public OrderResponseDto(Orders orders){
@@ -48,6 +50,7 @@ public class OrderResponseDto {
         this.startDate = orders.getStartDate();
         this.endDate = orders.getEndDate();
         this.createdAt = orders.getCreatedAt();
+        this.ownerId = orders.getVehicle().getOwnerId();
     }
 
 }

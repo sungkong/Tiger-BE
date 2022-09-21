@@ -25,6 +25,10 @@ public enum StatusCode {
     VEHICLE_CREATED(HttpStatus.CREATED, "차량 등록에 성공하셨습니다."),
     VEHICLE_UPDATED(HttpStatus.OK, "차량 정보 수정에 성공하셨습니다."),
     VEHICLE_DELETED(HttpStatus.OK, "차량 삭제에 성공하셨습니다."),
+    HEART_SUCCESS(HttpStatus.OK, "좋아요 성공"),
+    HEART_DELETED(HttpStatus.OK, "좋아요 취소 성공"),
+    HEARTLIST_SUCCESS(HttpStatus.OK, "좋아요목록 가져오기 성공"),
+
 
 
 

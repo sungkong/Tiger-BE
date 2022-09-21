@@ -105,4 +105,10 @@ public class VehicleDetailResponseDto {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
+    // 좋아요 여부
+    private boolean isHeart = false;
+    public void setHeart(boolean heart) {
+        isHeart = heart;
+    }
 }

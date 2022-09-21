@@ -62,6 +62,13 @@ public class VehicleCommonResponseDto {
     // 차 연비
     private String fuelEfficiency;
 
+    // 좋아요 여부
+    @Builder.Default
+    private boolean isHeart = false;
+
+    public void setHeart(boolean heart) {
+        isHeart = heart;
+    }
 
     public VehicleCommonResponseDto(Vehicle vehicle) {
         this.vid = vehicle.getId();

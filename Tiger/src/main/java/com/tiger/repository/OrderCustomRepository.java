@@ -23,13 +23,12 @@ public class OrderCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     QOrders order = QOrders.orders;
-    QPayment payment = QPayment.payment;
     QVehicle vehicle = QVehicle.vehicle;
 
     // 판매리스트(오너)
     public List<OrderResponseDto> getOrderListOwner(Long ownerId, String status, int limit, int offset) {
         return jpaQueryFactory.select(new QOrderResponseDto(order.id, vehicle.id, vehicle.vname, vehicle.vbrand, order.totalAmount,
-                vehicle.thumbnail, vehicle.location, order.startDate, order.endDate, order.createdAt))
+                vehicle.thumbnail, vehicle.location, order.startDate, order.endDate, order.createdAt, vehicle.ownerId))
                 .from(order)
                 .join(order.vehicle, vehicle)
                 .where(vehicle.ownerId.eq(ownerId)

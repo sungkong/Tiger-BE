@@ -16,5 +16,4 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     Optional<Vehicle> findByIdAndIsValid(Long id, boolean isValid);
 
-
 }
