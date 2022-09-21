@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -44,10 +45,10 @@ public class VehicleController {
 
     // 수입 상품 조회
     @GetMapping
-    public CommonResponseDto<?> readAllByTypeImported() {
+    public CommonResponseDto<?> readAllByTypeImported(HttpServletRequest request) {
         String type = "수입";
 
-        List<VehicleCommonResponseDto> vehicleCommonResponseDtos = vehicleService.readAllByType(type);
+        List<VehicleCommonResponseDto> vehicleCommonResponseDtos = vehicleService.readAllByType(type, request);
 
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleCommonResponseDtos);
     }
