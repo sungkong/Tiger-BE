@@ -215,22 +215,22 @@ public class OrderService {
 
     // 일일 매출 (오너)
     @Transactional(readOnly = true)
-    public CommonResponseDto<?> getIncomeListDay(HttpServletRequest request) {
+    public CommonResponseDto<?> getIncomeListDay(LocalDate date) {
 
         // 멤버검증
         Member owner = checkUtil.validateMember();
         return CommonResponseDto.success(INCOMELIST_SUCCESS,
-                orderCustomRepository.getIncomeListDay(owner.getId(), LocalDate.now()));
+                orderCustomRepository.getIncomeListDay(owner.getId(), date));
 
     }
     // 월 매출 (오너)
     @Transactional(readOnly = true)
-    public CommonResponseDto<?> getIncomeListMonth(HttpServletRequest request) {
+    public CommonResponseDto<?> getIncomeListMonth(LocalDate date) {
 
         // 멤버검증
         Member owner = checkUtil.validateMember();
         return CommonResponseDto.success(INCOMELIST_SUCCESS,
-                orderCustomRepository.getIncomeListMonth(owner.getId(), LocalDate.now()));
+                orderCustomRepository.getIncomeListMonth(owner.getId(), date));
     }
 
     /**

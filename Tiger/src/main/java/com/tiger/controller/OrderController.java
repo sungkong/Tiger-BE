@@ -4,10 +4,12 @@ import com.tiger.domain.CommonResponseDto;
 import com.tiger.domain.order.dto.OrderRequestDto;
 import com.tiger.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 
 @RequestMapping("/api/order")
 @RestController
@@ -53,14 +55,14 @@ public class OrderController {
 
     // 수익현황(일일 매출)
     @GetMapping("/owner/payout/day")
-    public CommonResponseDto<?> getIncomeListDaY(HttpServletRequest request) {
-        return orderService.getIncomeListDay(request);
+    public CommonResponseDto<?> getIncomeListDaY(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        return orderService.getIncomeListDay(date);
     }
 
     // 수익현황(월 매출)
     @GetMapping("/owner/payout/month")
-    public CommonResponseDto<?> getIncomeListMonth(HttpServletRequest request) {
-        return orderService.getIncomeListMonth(request);
+    public CommonResponseDto<?> getIncomeListMonth(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        return orderService.getIncomeListMonth(date);
     }
 
 }

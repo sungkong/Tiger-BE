@@ -245,7 +245,7 @@ public class VehicleService {
                     vehicleSearchResponseDto.setHeart(true);
                 }
             }
-            vehicleSearchResponseDtos.add(new VehicleSearchResponseDto(vehicleCustomResponseDto, startDate, endDate));
+            vehicleSearchResponseDtos.add(vehicleSearchResponseDto);
         }
 
         return vehicleSearchResponseDtos;
