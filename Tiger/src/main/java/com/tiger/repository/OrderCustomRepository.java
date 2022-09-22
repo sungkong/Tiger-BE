@@ -40,7 +40,7 @@ public class OrderCustomRepository {
 
 
     // 수익현황(일별매출 / 기준 : 당일 월 )
-    public List<IncomeResponseDto> getIncomeListDay(Long ownerId, LocalDate now) {
+    public List<IncomeResponseDto> getIncomeListDay(Long ownerId, LocalDate date) {
         return jpaQueryFactory.selectDistinct(new QIncomeResponseDto(
                 dateFormatYYYYmmdd(),
                 order.totalAmount.sum()))
@@ -48,13 +48,13 @@ public class OrderCustomRepository {
                 .join(vehicle)
                 .on(order.vehicle.id.eq(vehicle.id))
                 .where(vehicle.ownerId.eq(ownerId)
-                        .and(dateFormatYYYYmm(null).eq(dateFormatYYYYmm(now)))
+                        .and(dateFormatYYYYmm(null).eq(dateFormatYYYYmm(date)))
                         .and(order.status.ne(Status.CANCEL)))
                 .groupBy(dateFormatYYYYmmdd())
                 .fetch();
     }
     // 수익현황( 월매출 / 기준 : 당일 연도 )
-    public List<IncomeResponseDto> getIncomeListMonth(Long ownerId, LocalDate now) {
+    public List<IncomeResponseDto> getIncomeListMonth(Long ownerId, LocalDate date) {
         return jpaQueryFactory.selectDistinct(new QIncomeResponseDto(
                 dateFormatYYYYmm(null),
                 order.totalAmount.sum()))
@@ -62,7 +62,7 @@ public class OrderCustomRepository {
                 .join(vehicle)
                 .on(order.vehicle.id.eq(vehicle.id))
                 .where(vehicle.ownerId.eq(ownerId)
-                        .and(dateFormatYYYY(null).eq(dateFormatYYYY(now)))
+                        .and(dateFormatYYYY(null).eq(dateFormatYYYY(date)))
                         .and(order.status.ne(Status.CANCEL)))
                 .groupBy(dateFormatYYYYmm(null))
                 .fetch();
