@@ -21,6 +21,7 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
 
     Optional<List<Orders>> findAllByVehicleIdAndStatusNot(Long vehicleId, Status status);
 
+    // 최적화 해야함
     // 주문리스트 (렌터)
     @Query(value =  "SELECT * " +
                     "FROM orders " +
