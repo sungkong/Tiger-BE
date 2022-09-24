@@ -5,10 +5,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tiger.domain.order.QOrders;
 import com.tiger.domain.order.Status;
-import com.tiger.domain.order.dto.IncomeResponseDto;
-import com.tiger.domain.order.dto.OrderResponseDto;
-import com.tiger.domain.order.dto.QIncomeResponseDto;
-import com.tiger.domain.order.dto.QOrderResponseDto;
+import com.tiger.domain.order.dto.*;
 import com.tiger.domain.payment.QPayment;
 import com.tiger.domain.vehicle.QVehicle;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +36,10 @@ public class OrderCustomRepository {
     }
 
 
-    // 수익현황(일별매출 / 기준 : 당일 월 )
+    // 수익현황(일별매출 / 기준 : 당일 월  / 라인그래프)
     public List<IncomeResponseDto> getIncomeListDay(Long ownerId, LocalDate date) {
         return jpaQueryFactory.selectDistinct(new QIncomeResponseDto(
-                dateFormatYYYYmmdd(),
+                dateFormatYYYYmmdd(null),
                 order.totalAmount.sum()))
                 .from(order)
                 .join(vehicle)
@@ -50,10 +47,10 @@ public class OrderCustomRepository {
                 .where(vehicle.ownerId.eq(ownerId)
                         .and(dateFormatYYYYmm(null).eq(dateFormatYYYYmm(date)))
                         .and(order.status.ne(Status.CANCEL)))
-                .groupBy(dateFormatYYYYmmdd())
+                .groupBy(dateFormatYYYYmmdd(null))
                 .fetch();
     }
-    // 수익현황( 월매출 / 기준 : 당일 연도 )
+    // 수익현황( 월매출 / 기준 : 당일 연도 / 라인그래프)
     public List<IncomeResponseDto> getIncomeListMonth(Long ownerId, LocalDate date) {
         return jpaQueryFactory.selectDistinct(new QIncomeResponseDto(
                 dateFormatYYYYmm(null),
@@ -68,7 +65,7 @@ public class OrderCustomRepository {
                 .fetch();
     }
 
-    // 수익현황( 월매출 / 기준 : 최근 12개월 )
+    // 수익현황( 월매출 / 기준 : 최근 12개월 / 라인그래프)
     public List<IncomeResponseDto> getIncomeListMonthRecentYear(Long ownerId, LocalDate now) {
         return jpaQueryFactory.selectDistinct(new QIncomeResponseDto(
                 dateFormatYYYYmm(null),
@@ -83,13 +80,93 @@ public class OrderCustomRepository {
                 .fetch();
     }
 
-    private StringTemplate dateFormatYYYYmmdd() {
-
-        return Expressions.stringTemplate(
-                "DATE_FORMAT({0}, {1})",
-                order.createdAt,
-                ConstantImpl.create("%Y-%m-%d"));
+    // 수익현황(일별매출 / 기준 : 당일 월  / 파이그래프)
+    public List<IncomeVehicleResponseDto> getIncomeListDayPie(Long ownerId, LocalDate date) {
+        return jpaQueryFactory.selectDistinct(new QIncomeVehicleResponseDto(
+                vehicle.id,
+                vehicle.vbrand,
+                vehicle.vname,
+                order.totalAmount.sum(),
+                dateFormatYYYYmmdd(date)))
+                .from(order)
+                .join(vehicle)
+                .on(order.vehicle.id.eq(vehicle.id))
+                .where(vehicle.ownerId.eq(ownerId)
+                        .and(dateFormatYYYYmmdd(null).eq(dateFormatYYYYmmdd(date)))
+                        .and(order.status.ne(Status.CANCEL)))
+                .groupBy(vehicle.id)
+                .fetch();
     }
+    // 수익현황( 월매출 / 기준 : 당일 연도 / 파이그래프)
+    public List<IncomeVehicleResponseDto> getIncomeListMonthPie(Long ownerId, LocalDate date) {
+        return jpaQueryFactory.selectDistinct(new QIncomeVehicleResponseDto(
+                vehicle.id,
+                vehicle.vbrand,
+                vehicle.vname,
+                order.totalAmount.sum(),
+                dateFormatYYYYmmdd(date)))
+                .from(order)
+                .join(vehicle)
+                .on(order.vehicle.id.eq(vehicle.id))
+                .where(vehicle.ownerId.eq(ownerId)
+                        .and(dateFormatYYYYmm(null).eq(dateFormatYYYYmm(date)))
+                        .and(order.status.ne(Status.CANCEL)))
+                .groupBy(vehicle.id)
+                .fetch();
+    }
+
+    // 수익현황(일별매출 / 기준 : 당일 월도  / 막대그래프)
+    public List<IncomeVehicleResponseDto> getIncomeListDayBar(Long ownerId, LocalDate date) {
+        return jpaQueryFactory.select(new QIncomeVehicleResponseDto(
+                vehicle.id,
+                vehicle.vbrand,
+                vehicle.vname,
+                order.totalAmount.sum(),
+                dateFormatYYYYmmdd(null)))
+                .from(order)
+                .join(vehicle)
+                .on(order.vehicle.id.eq(vehicle.id))
+                .where(vehicle.ownerId.eq(ownerId)
+                        .and(dateFormatYYYYmm(null).eq(dateFormatYYYYmm(date)))
+                        .and(order.status.ne(Status.CANCEL)))
+                .groupBy(vehicle.id, dateFormatYYYYmmdd(null))
+                .fetch();
+    }
+
+    // 수익현황(월매출 / 기준 : 당일 연  / 막대그래프)
+    public List<IncomeVehicleResponseDto> getIncomeListMonthBar(Long ownerId, LocalDate date) {
+        return jpaQueryFactory.select(new QIncomeVehicleResponseDto(
+                vehicle.id,
+                vehicle.vbrand,
+                vehicle.vname,
+                order.totalAmount.sum(),
+                dateFormatYYYYmm(null)))
+                .from(order)
+                .join(vehicle)
+                .on(order.vehicle.id.eq(vehicle.id))
+                .where(vehicle.ownerId.eq(ownerId)
+                        .and(dateFormatYYYY(null).eq(dateFormatYYYY(date)))
+                        .and(order.status.ne(Status.CANCEL)))
+                .groupBy(vehicle.id, dateFormatYYYYmm(null))
+                .fetch();
+    }
+
+    private StringTemplate dateFormatYYYYmmdd(LocalDate date) {
+
+        if (date == null) {
+            return Expressions.stringTemplate(
+                    "DATE_FORMAT({0}, {1})",
+                    order.createdAt,
+                    ConstantImpl.create("%Y-%m-%d"));
+        } else {
+            return Expressions.stringTemplate(
+                    "DATE_FORMAT({0}, {1})",
+                    date,
+                    ConstantImpl.create("%Y-%m-%d"));
+
+        }
+    }
+
 
     private StringTemplate dateFormatYYYYmm(LocalDate now) {
 
@@ -121,6 +198,13 @@ public class OrderCustomRepository {
                     ConstantImpl.create("%Y"));
 
         }
+    }
+
+    private StringTemplate toAnyValue(Object object){
+        return Expressions.stringTemplate(
+                "ANY_VALUE({0})",
+                object
+        );
     }
 
 }

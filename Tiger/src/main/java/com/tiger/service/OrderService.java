@@ -5,8 +5,7 @@ import com.tiger.domain.bank.Bank;
 import com.tiger.domain.member.Member;
 import com.tiger.domain.order.Orders;
 import com.tiger.domain.order.Status;
-import com.tiger.domain.order.dto.OrderRequestDto;
-import com.tiger.domain.order.dto.OrderResponseDto;
+import com.tiger.domain.order.dto.*;
 import com.tiger.domain.payment.PayMethod;
 import com.tiger.domain.payment.Payment;
 import com.tiger.domain.vehicle.Vehicle;
@@ -25,7 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.tiger.exception.StatusCode.*;
@@ -213,25 +214,40 @@ public class OrderService {
         return CommonResponseDto.success(ORDERLIST_SUCCESS, ordersList);
     }
 
-    // 일일 매출 (오너)
+    // 일일 매출
     @Transactional(readOnly = true)
     public CommonResponseDto<?> getIncomeListDay(LocalDate date) {
 
         // 멤버검증
         Member owner = checkUtil.validateMember();
-        return CommonResponseDto.success(INCOMELIST_SUCCESS,
-                orderCustomRepository.getIncomeListDay(owner.getId(), date));
+        Map<String, Object> resultMap = new HashMap<>();
+        // 라인그래프
+        resultMap.put("Line", orderCustomRepository.getIncomeListDay(owner.getId(), date));
+        // 파이그래프
+        resultMap.put("pie", orderCustomRepository.getIncomeListDayPie(owner.getId(), date));
+        // 바 그래프
+        resultMap.put("bar", orderCustomRepository.getIncomeListDayBar(owner.getId(), date));
+
+        return CommonResponseDto.success(INCOMELIST_SUCCESS, resultMap);
 
     }
-    // 월 매출 (오너)
+    // 월 매출 (날짜+매출만)
     @Transactional(readOnly = true)
     public CommonResponseDto<?> getIncomeListMonth(LocalDate date) {
 
         // 멤버검증
         Member owner = checkUtil.validateMember();
-        return CommonResponseDto.success(INCOMELIST_SUCCESS,
-                orderCustomRepository.getIncomeListMonth(owner.getId(), date));
+        Map<String, Object> resultMap = new HashMap<>();
+        // 라인그래프
+        resultMap.put("Line", orderCustomRepository.getIncomeListMonth(owner.getId(), date));
+        // 파이그래프
+        resultMap.put("pie", orderCustomRepository.getIncomeListMonthPie(owner.getId(), date));
+        // 바 그래프
+        resultMap.put("bar", orderCustomRepository.getIncomeListMonthBar(owner.getId(), date));
+
+        return CommonResponseDto.success(INCOMELIST_SUCCESS, resultMap);
     }
+
 
     /**
      * 매일 정오 예약 당일이 된 상품 status = use로 변경하는 스케줄링
