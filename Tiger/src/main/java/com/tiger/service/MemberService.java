@@ -14,6 +14,7 @@ import com.tiger.repository.RefreshTokenRepository;
 import com.tiger.utils.GenerateRandomUtil;
 import com.tiger.utils.MapUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,7 +40,7 @@ public class MemberService {
 
     private final MapUtil map;
 
-    private static final String DEFAULT_PROFILE_IMAGE = "https://mygitpher.s3.ap-northeast-2.amazonaws.com/DEFAULT_PROFILE_IMAGE.png";
+    @Value("${s3.default.profile.image}") private String DEFAULT_PROFILE_IMAGE;
 
 
     @Transactional
@@ -139,5 +140,11 @@ public class MemberService {
         return httpServletRequest.getHeader("RefreshToken");
     }
 
+    public Long findIdByEmail(String email) {
+
+        return memberRepository.findIdByEmail(email).orElseThrow(() -> {
+            throw new CustomException(StatusCode.USER_NOT_FOUND);
+        });
+    }
 }
 

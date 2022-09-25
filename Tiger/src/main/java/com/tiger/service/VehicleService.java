@@ -10,6 +10,7 @@ import com.tiger.exception.StatusCode;
 import com.tiger.repository.*;
 import com.tiger.utils.CheckUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,9 @@ public class VehicleService {
     private final VehicleCustomRepository vehicleCustomRepository;
     private final HeartRepository heartRepository;
     private final CheckUtil checkUtil;
-    private static final String DEFAULT_VEHICLE_IMAGE = "https://mygitpher.s3.ap-northeast-2.amazonaws.com/DEFAULT_VEHICLE_IMAGE.png";
+
+    @Value("${s3.default.vehicle.image}")
+    private String DEFAULT_VEHICLE_IMAGE;
 
 
     // 상품 등록

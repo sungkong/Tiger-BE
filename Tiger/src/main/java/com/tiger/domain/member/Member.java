@@ -1,5 +1,6 @@
 package com.tiger.domain.member;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tiger.domain.Timestamped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ public class Member extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -35,11 +36,9 @@ public class Member extends Timestamped {
     @Column(nullable = false)
     private boolean isValid;
 
-    // 카카오 ID
     @Column
     private String kakaoUserId;
 
-    // 프로필 사진
     @Column(nullable = false)
     private String profileImage;
 

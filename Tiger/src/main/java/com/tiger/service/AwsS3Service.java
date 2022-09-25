@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.tiger.exception.CustomException;
+import com.tiger.exception.StatusCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +54,7 @@ public class AwsS3Service {
             String url = amazonS3Client.getUrl(bucket, fileName).toString();
 
             fileUrlList.add(url);
+
         });
 
         return fileUrlList;
@@ -65,10 +69,15 @@ public class AwsS3Service {
     }
 
     private String getFileExtension(String fileName) {
+        String fileExtension;
         try {
-            return fileName.substring(fileName.lastIndexOf("."));
+            fileExtension = fileName.substring(fileName.lastIndexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일(" + fileName + ") 입니다.");
         }
+        if (!Arrays.asList(".jpg", ".png", ".jpeg", ".gif", ".bmp").contains(fileExtension.toLowerCase())) {
+            throw new CustomException(StatusCode.BAD_IMAGE_INPUT);
+        }
+        return fileExtension;
     }
 }

@@ -42,6 +42,8 @@ public enum StatusCode {
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일입니다."),
 
     INVALID_DATE(HttpStatus.BAD_REQUEST, "유효하지 않은 날짜입니다."),
+    BAD_IMAGE_INPUT(HttpStatus.BAD_REQUEST, "이미지 파일 형식을 지켜주세요"),
+    CANNOT_CHAT_BY_ONESELF(HttpStatus.BAD_REQUEST, "자기 자신과 채팅을 할 수는 없습니다."),
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     INVALID_AUTH_ORDER(HttpStatus.UNAUTHORIZED, "주문을 한 사용자만 접근할 수 있습니다."),
@@ -51,6 +53,7 @@ public enum StatusCode {
     EXPIRED_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰 입니다"),
     UNSUPPORTED_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "지원되지 않는 JWT 토큰 입니다"),
     INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 JWT 토큰 입니다"),
+    INVALID_CHATROOM_EXIT(HttpStatus.UNAUTHORIZED, "잘못된 방식으로 채팅방을 나갔습니다."),
 
     /* 403 FORBIDDEN : 컨텐츠에 접근할 권리가 없음 */
     EXPIRED_DATE_FORBIDDEN(HttpStatus.FORBIDDEN, "이전 날짜들을 예약할 수 없습니다."),
@@ -72,6 +75,7 @@ public enum StatusCode {
     BANK_NOT_FOUND(HttpStatus.NOT_FOUND, "계좌를 찾을 수 없습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제수단을 찾을 수 없습니다."),
     OPENDATE_NOT_FOUND(HttpStatus.NOT_FOUND, "사용기간이 존재하지 않는 상품입니다."),
+    VALIDATION_FAILURE(HttpStatus.NOT_FOUND, "입력값이 올바르지 않습니다."),
 
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재 */

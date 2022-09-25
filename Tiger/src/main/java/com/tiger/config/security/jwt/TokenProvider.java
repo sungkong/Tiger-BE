@@ -21,6 +21,9 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.NoSuchElementException;
+
+import static ch.qos.logback.classic.PatternLayout.HEADER_PREFIX;
 
 @Slf4j
 @Component
@@ -35,6 +38,8 @@ public class TokenProvider {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserDetailsService userDetailsService;
 
+    @Value("${jwt.secret}")
+    String secretKey;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey,
                          RefreshTokenRepository refreshTokenRepository,

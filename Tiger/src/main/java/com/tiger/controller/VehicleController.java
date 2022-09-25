@@ -8,6 +8,7 @@ import com.tiger.domain.vehicle.dto.*;
 import com.tiger.exception.StatusCode;
 import com.tiger.service.OpenDateService;
 import com.tiger.service.VehicleService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,11 +17,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RestController @RequestMapping("/api/vehicle")
+@RestController
+@RequestMapping("/api/vehicle")
 public class VehicleController {
 
     private final VehicleService vehicleService;
@@ -28,7 +29,7 @@ public class VehicleController {
     private final OpenDateService openDateService;
 
 
-    // 상품 등록
+    @ApiOperation(value = "차량 등록")
     @PostMapping("/management")
     public CommonResponseDto<?> create(@ModelAttribute VehicleRequestDto requestDto,
                                        @AuthenticationPrincipal UserDetails userDetails) {
@@ -43,7 +44,7 @@ public class VehicleController {
         return CommonResponseDto.success(StatusCode.VEHICLE_CREATED, vehicle.getVname());
     }
 
-    // 수입 상품 조회
+    @ApiOperation(value = "수입 차량 조회")
     @GetMapping
     public CommonResponseDto<?> readAllByTypeImported(HttpServletRequest request) {
         String type = "수입";
@@ -53,7 +54,7 @@ public class VehicleController {
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleCommonResponseDtos);
     }
 
-    // 상품 상세 조회
+    @ApiOperation(value = "차량 상세 조회")
     @GetMapping("/{vId}")
     public CommonResponseDto<?> readOne(@PathVariable Long vId,
                                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
@@ -66,7 +67,7 @@ public class VehicleController {
     }
 
 
-    // 등록한 상품 조회
+    @ApiOperation(value = "내가 등록한 차량 조회")
     @GetMapping("/management")
     public CommonResponseDto<?> readAllByOwnerId(@AuthenticationPrincipal UserDetails userDetails) {
 
@@ -77,7 +78,7 @@ public class VehicleController {
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleOwnerResponseDtos);
     }
 
-    // 상품 수정페이지 요청
+    @ApiOperation(value = "차량 수정 페이지 요청")
     @GetMapping("/management/{vId}")
     public CommonResponseDto<?> updatePage(@PathVariable Long vId,
                                            @AuthenticationPrincipal UserDetails userDetails) {
@@ -89,7 +90,7 @@ public class VehicleController {
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleDetailResponseDto);
     }
 
-    // 상품 수정
+    @ApiOperation(value = "차량 수정")
     @PutMapping("/management/{vId}")
     public CommonResponseDto<?> update(@PathVariable Long vId,
                                        @ModelAttribute VehicleRequestDto requestDto,
@@ -102,7 +103,7 @@ public class VehicleController {
         return CommonResponseDto.success(StatusCode.VEHICLE_UPDATED, name);
     }
 
-    // 상품 삭제
+    @ApiOperation(value = "차량 삭제")
     @DeleteMapping("/management/{vId}")
     public CommonResponseDto<?> delete(@PathVariable Long vId,
                                        @AuthenticationPrincipal UserDetails userDetails) {
@@ -114,7 +115,7 @@ public class VehicleController {
         return CommonResponseDto.success(StatusCode.VEHICLE_DELETED, name);
     }
 
-    // 상품 검색
+    @ApiOperation(value = "차량 검색")
     @PostMapping("/search")
     public CommonResponseDto<?> search(@RequestBody VehicleSearch vehicleSearch, HttpServletRequest request) {
 

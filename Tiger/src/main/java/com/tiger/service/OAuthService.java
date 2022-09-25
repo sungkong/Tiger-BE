@@ -42,7 +42,6 @@ public class OAuthService {
 
     // 카카오 로그인 관련 정보
     @Value("${kakao.access-token.client-id}") private String CLIENT_ID;
-    @Value("${kakao.access-token.client-secret}") private String CLIENT_SECRET;
     @Value("${kakao.access-token.redirect-uri}") private String REDIRECT_URI;
 
     // 카카오 로그인
