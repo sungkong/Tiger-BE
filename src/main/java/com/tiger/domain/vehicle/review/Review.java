@@ -1,5 +1,6 @@
 package com.tiger.domain.vehicle.review;
 import com.tiger.domain.Timestamped;
+import com.tiger.domain.member.Member;
 import com.tiger.domain.vehicle.Vehicle;
 import com.tiger.domain.vehicle.review.dto.ReviewRequestDto;
 import lombok.Builder;
@@ -23,6 +24,10 @@ public class Review extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     private Vehicle vehicle;
 
+    @JoinColumn(name = "member_id")
+    @ManyToOne
+    private Member member;
+
     @Column(nullable = false)
     private String comment;
 
@@ -37,9 +42,10 @@ public class Review extends Timestamped {
     }
 
     @Builder
-    public Review(Vehicle vehicle, String comment, Long rating) {
+    public Review(Vehicle vehicle, String comment, Long rating,Member member) {
         this.vehicle = vehicle;
         this.comment = comment;
         this.rating = rating;
+        this.member = member;
     }
 }

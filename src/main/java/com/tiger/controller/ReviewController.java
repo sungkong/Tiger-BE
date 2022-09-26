@@ -28,17 +28,22 @@ public class ReviewController {
         return reviewService.getReviewList(vid);
     }
 
-
-    @PutMapping("/review/{reviewId}") // Review 수정?
-    public CommonResponseDto<?> updateReviewList(@RequestBody ReviewRequestDto reviewRequestDto,@PathVariable Long reviewId) {
-        return reviewService.updateReview(reviewRequestDto,reviewId);
+    @GetMapping("/reviewed/{vid}")
+    public CommonResponseDto<?> getReviewed(@PathVariable Long vid) {
+        return reviewService.getReviewed(vid);
     }
 
 
-    @DeleteMapping("/review/{reviewId}") // Review 삭제
-    public CommonResponseDto<?> deleteReview(@PathVariable Long reviewId){
+    @PutMapping("/review/{vid}") // Review 수정?
+    public CommonResponseDto<?> updateReviewList(@RequestBody ReviewRequestDto reviewRequestDto,@PathVariable Long vid) {
+        return reviewService.updateReview(reviewRequestDto,vid);
+    }
 
-        return reviewService.deleteReview(reviewId);
+
+    @DeleteMapping("/review/{vid}") // Review 삭제
+    public CommonResponseDto<?> deleteReview(@PathVariable Long vid){
+
+        return reviewService.deleteReview(vid);
     }
 
 

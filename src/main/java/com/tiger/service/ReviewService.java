@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,10 +29,10 @@ public class ReviewService {
 
     @Transactional
     public CommonResponseDto<?> postReview(ReviewRequestDto reviewRequestDto, Long vid) {
-        Member member = checkUtil.validateMember();
+        Member findmember = checkUtil.validateMember();
         Vehicle findvehicle = checkUtil.validateVehicle(vid);
 
-        if (isPresentReview(member.getEmail())) {
+        if (isPresentReview(findmember)) {
             return CommonResponseDto.fail(REVIEW_NO_MORE); // 1인 1리뷰 한정
         }
 
@@ -39,12 +40,13 @@ public class ReviewService {
                 .vehicle(findvehicle)
                 .comment(reviewRequestDto.getComment())
                 .rating(reviewRequestDto.getRating())
+                .member(findmember)
                 .build());
 
         return CommonResponseDto.success(REVIEW_SUCCESS, null);
 
     }
-
+    @Transactional
     public CommonResponseDto<?> getReviewList(Long vid) {
 
         List<Review> findReviewList = reviewRepository.findAllByVehicleId(vid).orElseThrow(() -> new CustomException(VEHICLE_NOT_FOUND));
@@ -52,39 +54,61 @@ public class ReviewService {
         List<ReviewResponseDto> reviewResponseDtoList = findReviewList.stream()
                 .map(dto -> ReviewResponseDto.builder()
                         .rating(dto.getRating())
-                        .author(dto.getCreatedBy())
+                        .author(dto.getMember().getName())
                         .comment(dto.getComment())
+                        .createdAt(dto.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                         .build())
                 .collect(Collectors.toList());
 
-
+//    LocalDateTime d = LocalDateTime.parse("2016-10-31 23:59:59",
+//            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         return CommonResponseDto.success(REVIEW_LIST_SUCCESS, reviewResponseDtoList);
     }
+    @Transactional
+    public CommonResponseDto<?> getReviewed(Long vid) {
+        Member member = checkUtil.validateMember();
 
-    public CommonResponseDto<?> deleteReview(Long reviewId) {
-        checkUtil.validateMember();
-        reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
+        Review findReview = reviewRepository.findByMemberAndVehicleId(member,vid).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
 
-        reviewRepository.deleteById(reviewId);
+
+       ReviewResponseDto reviewResponseDto = ReviewResponseDto.builder()
+                .author(findReview.getMember().getName())
+                .comment(findReview.getComment())
+                .rating(findReview.getRating())
+                .createdAt(findReview.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .build();
+
+
+
+        return CommonResponseDto.success(REVIEW_LIST_SUCCESS, reviewResponseDto);
+    }
+    @Transactional
+    public CommonResponseDto<?> deleteReview(Long vid) {
+        Member member = checkUtil.validateMember();
+
+        if(!(reviewRepository.existsByMember(member))) {
+            return CommonResponseDto.success(REVIEW_NOT_FOUND, null);
+        }
+
+        reviewRepository.deleteByMemberAndVehicleId(member,vid);
 
         return CommonResponseDto.success(REVIEW_DELETED, null);
     }
+    @Transactional
+    public CommonResponseDto<?> updateReview(ReviewRequestDto reviewRequestDto,Long vid) {
+        Member member = checkUtil.validateMember();
 
-    public CommonResponseDto<?> updateReview(ReviewRequestDto reviewRequestDto, Long reviewId) {
-        checkUtil.validateMember();
-
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
+        Review review = reviewRepository.findByMemberAndVehicleId(member,vid).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
 
         Review newReview = review.update(reviewRequestDto);
 
         reviewRepository.save(newReview);
 
-        return CommonResponseDto.success(REVIEW_UPDATED,reviewId);
+        return CommonResponseDto.success(REVIEW_UPDATED, member.getName());
     }
 
 
-    public boolean isPresentReview(String email) {
-        return reviewRepository.existsByCreatedBy(email);
+    public boolean isPresentReview(Member member) {
+        return reviewRepository.existsByMember(member);
     }
-
 }
