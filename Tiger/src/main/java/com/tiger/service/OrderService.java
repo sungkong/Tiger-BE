@@ -14,6 +14,8 @@ import com.tiger.repository.*;
 import com.tiger.utils.CheckUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.tiger.exception.StatusCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -255,12 +258,13 @@ public class OrderService {
      * 매일 24시 0분 1초에 실행
      * */
     @Scheduled(cron = "1 0 0 * * *", zone="Asia/Seoul")
+    @Transactional
     public void changeStatusUse(){
         List<Orders> list = orderRepository.findAllByStartDateEquals(LocalDate.now()).get();
-
         for(int i=0; i<list.size(); i++){
             Orders order = list.get(i);
             order.setStatus(Status.USE);
+            log.info("주문상태 USE로 변경 : {} ", order.getId());
         }
     }
 
