@@ -28,12 +28,13 @@ public class ReviewService {
 
 
     @Transactional
-    public CommonResponseDto<?> postReview(ReviewRequestDto reviewRequestDto, Long vid) {
+    public CommonResponseDto<?> postAndUpdateReview(ReviewRequestDto reviewRequestDto, Long vid) {
         Member findmember = checkUtil.validateMember();
         Vehicle findvehicle = checkUtil.validateVehicle(vid);
 
         if (isPresentReview(findmember)) {
-            return CommonResponseDto.fail(REVIEW_NO_MORE); // 1인 1리뷰 한정
+
+            return updateReview(reviewRequestDto,vid,findmember); // 1인 1리뷰 한정
         }
 
         reviewRepository.save(Review.builder()
@@ -94,9 +95,8 @@ public class ReviewService {
 
         return CommonResponseDto.success(REVIEW_DELETED, null);
     }
-    @Transactional
-    public CommonResponseDto<?> updateReview(ReviewRequestDto reviewRequestDto,Long vid) {
-        Member member = checkUtil.validateMember();
+
+    protected  CommonResponseDto<?> updateReview(ReviewRequestDto reviewRequestDto,Long vid,Member member) {
 
         Review review = reviewRepository.findByMemberAndVehicleId(member,vid).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
 
