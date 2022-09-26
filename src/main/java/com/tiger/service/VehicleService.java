@@ -36,9 +36,8 @@ public class VehicleService {
     private String DEFAULT_VEHICLE_IMAGE;
 
 
-    // 상품 등록
     @Transactional
-    public Vehicle create(VehicleRequestDto requestDto, Long ownerId) {
+    public Vehicle createVehicle(VehicleRequestDto requestDto, Long ownerId) {
 
         List<MultipartFile> multipartFiles = requestDto.getImageList();
 
@@ -68,8 +67,8 @@ public class VehicleService {
         return vehicleRepository.save(vehicle);
     }
 
-    // 종류별 상품 조회
-    public List<VehicleCommonResponseDto> readAllByType(String type, HttpServletRequest request) {
+
+    public List<VehicleCommonResponseDto> readAllVehiclesByType(String type, HttpServletRequest request) {
 
         Member member = null;
         if (null != request.getHeader("RefreshToken") && null != request.getHeader("Authorization")) {
@@ -90,39 +89,21 @@ public class VehicleService {
                 }
             }
             vehicleCommonResponseDtos.add(vehicleCommonResponseDto);
-//                VehicleCommonResponseDto.builder()
-//                    .vid(vehicle.getId())
-//                    .ownerId(vehicle.getOwnerId())
-//                    .price(vehicle.getPrice())
-//                    .description(vehicle.getDescription())
-//                    .location(vehicle.getLocation())
-//                    .locationX(vehicle.getLocationX())
-//                    .locationY(vehicle.getLocationY())
-//                    .imageList(vehicle.getImages().stream().map(VehicleImage::getImageUrl).collect(Collectors.toList()))
-//                    .vbrand(vehicle.getVbrand())
-//                    .vname(vehicle.getVname())
-//                    .type(vehicle.getType())
-//                    .years(vehicle.getYears())
-//                    .fuelType(vehicle.getFuelType())
-//                    .passengers(vehicle.getPassengers())
-//                    .transmission(vehicle.getTransmission())
-//                    .fuelEfficiency(vehicle.getFuelEfficiency())
-//                    .build());
 
         }
         return vehicleCommonResponseDtos;
     }
 
-    // 상세 상세 조회
-    public VehicleDetailResponseDto readOne(Long vId, LocalDate startDate, LocalDate endDate, HttpServletRequest request) {
 
-        Vehicle vehicle = findVehicleByVid(vId);
+    public VehicleDetailResponseDto readOneVehicle(Long vId, LocalDate startDate, LocalDate endDate, HttpServletRequest request) {
+
+        Vehicle vehicle = findVehicleByVehicleId(vId);
         Member renter = null;
         if (null != request.getHeader("RefreshToken") && null != request.getHeader("Authorization")) {
             renter = checkUtil.validateMember();
         }
 
-        Member owner = findMemberByMid(vehicle.getOwnerId());
+        Member owner = findMemberByMemberId(vehicle.getOwnerId());
 
         VehicleDetailResponseDto vehicleDetailResponseDto = new VehicleDetailResponseDto(vehicle, owner, startDate, endDate);
         if(renter != null){
@@ -133,24 +114,24 @@ public class VehicleService {
         return vehicleDetailResponseDto;
     }
 
-    // 등록한 상품 수정
-    public VehicleDetailResponseDto updatePage(Long vId, Long ownerId) {
 
-        Vehicle vehicle = findVehicleByVid(vId);
+    public VehicleDetailResponseDto readOneVehicleForVehicleUpdatePage(Long vId, Long ownerId) {
+
+        Vehicle vehicle = findVehicleByVehicleId(vId);
 
         if (!vehicle.getOwnerId().equals(ownerId)) {
             throw new CustomException(StatusCode.INVALID_AUTH_UPDATE);
         }
 
-        Member member = findMemberByMid(ownerId);
+        Member member = findMemberByMemberId(ownerId);
 
         return new VehicleDetailResponseDto(vehicle, member, null, null);
     }
 
-    // 등록한 상품 조회
-    public List<VehicleOwnerResponseDto> readAllByOwnerId(Long ownerId) {
 
-        Member member = findMemberByMid(ownerId);
+    public List<VehicleOwnerResponseDto> readAllVehiclesByOwnerId(Long ownerId) {
+
+        Member member = findMemberByMemberId(ownerId);
 
         List<Vehicle> vehicleList = vehicleRepository.findAllByOwnerIdAndIsValidOrderByCreatedAtDesc(ownerId, true).orElseThrow(()-> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
@@ -176,17 +157,17 @@ public class VehicleService {
         return vehicleOwnerResponseDtos;
     }
 
-    // 상품 수정
-    @Transactional
-    public String update(Long vId, VehicleRequestDto requestDto, Long ownerId) {
 
-        Vehicle vehicle = findVehicleByVid(vId);
+    @Transactional
+    public String updateVehicle(Long vId, VehicleRequestDto requestDto, Long ownerId) {
+
+        Vehicle vehicle = findVehicleByVehicleId(vId);
 
         if (!vehicle.getOwnerId().equals(ownerId)) {
             throw new CustomException(StatusCode.INVALID_AUTH_UPDATE);
         }
 
-        deleteAllImages(vId);
+        deleteAllVehicleImages(vId);
 
         List<MultipartFile> multipartFiles = requestDto.getImageList();
 
@@ -199,25 +180,25 @@ public class VehicleService {
         return vehicle.getVname();
     }
 
-    // 상품 삭제
-    @Transactional
-    public String delete(Long vId, Long ownerId) {
 
-        Vehicle vehicle = findVehicleByVid(vId);
+    @Transactional
+    public String deleteVehicle(Long vId, Long ownerId) {
+
+        Vehicle vehicle = findVehicleByVehicleId(vId);
 
         if (!vehicle.getOwnerId().equals(ownerId)) {
             throw new CustomException(StatusCode.INVALID_AUTH_UPDATE);
         }
 
-        deleteAllImages(vId);
+        deleteAllVehicleImages(vId);
 
         vehicle.delete(DEFAULT_VEHICLE_IMAGE);
 
         return vehicle.getVname();
     }
 
-    // 상품 검색
-    public List<VehicleSearchResponseDto> search(VehicleSearch vehicleSearch, HttpServletRequest request) {
+
+    public List<VehicleSearchResponseDto> searchVehicles(VehicleSearch vehicleSearch, HttpServletRequest request) {
 
         Member member = null;
         if (null != request.getHeader("RefreshToken") && null != request.getHeader("Authorization")) {
@@ -248,19 +229,19 @@ public class VehicleService {
         return vehicleSearchResponseDtos;
     }
 
-    public Vehicle findVehicleByVid(Long vId) {
+    public Vehicle findVehicleByVehicleId(Long vId) {
         return vehicleRepository.findByIdAndIsValid(vId, true).orElseThrow(() -> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
         });
     }
 
-    public Member findMemberByMid(Long mId) {
+    public Member findMemberByMemberId(Long mId) {
         return memberRepository.findByIdAndIsValid(mId, true).orElseThrow(() -> {
             throw new CustomException(StatusCode.USER_NOT_FOUND);
         });
     }
 
-    public void deleteAllImages(Long vId) {
+    public void deleteAllVehicleImages(Long vId) {
         List<VehicleImage> vehicleImages = vehicleImageRepository.findAllByVehicle_Id(vId);
         for (VehicleImage vehicleImage : vehicleImages) {
 

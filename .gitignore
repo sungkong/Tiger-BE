@@ -30,8 +30,8 @@
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
-.gradle
-!gradle/wrapper/gradle-wrapper.jar
+.gradle/
+
 
 
 # Gradle and Maven with auto-import
@@ -130,8 +130,7 @@ fabric.properties
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
-*.jar
+# Package Files
 *.war
 *.nar
 *.ear
