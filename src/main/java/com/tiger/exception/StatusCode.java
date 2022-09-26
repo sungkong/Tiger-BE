@@ -29,7 +29,11 @@ public enum StatusCode {
     HEART_DELETED(HttpStatus.OK, "좋아요 취소 성공"),
     HEARTLIST_SUCCESS(HttpStatus.OK, "좋아요목록 가져오기 성공"),
 
+    REVIEW_SUCCESS(HttpStatus.OK, "리뷰 작성 성공"),
+    REVIEW_UPDATED(HttpStatus.OK, "리뷰 수정 성공"),
+    REVIEW_LIST_SUCCESS(HttpStatus.OK, "리뷰 조회 성공"),
 
+    REVIEW_DELETED(HttpStatus.OK, "리뷰 삭제 성공"),
 
 
 
@@ -59,6 +63,8 @@ public enum StatusCode {
     EXPIRED_DATE_FORBIDDEN(HttpStatus.FORBIDDEN, "이전 날짜들을 예약할 수 없습니다."),
     SELF_ORDER_FORBIDDEN(HttpStatus.FORBIDDEN, "본인 상품은 주문할 수 없습니다."),
 
+    REVIEW_NO_MORE(HttpStatus.FORBIDDEN, "리뷰는 1회에 한해 작성할 수 있습니다."),
+
 
     /* 404 NOT_FOUND : Resource를 찾을 수 없음 */
     USERNAME_NOT_FOUND(HttpStatus.NOT_FOUND, "로그인된 사용자만 접근할 수 있습니다."),
@@ -76,6 +82,8 @@ public enum StatusCode {
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제수단을 찾을 수 없습니다."),
     OPENDATE_NOT_FOUND(HttpStatus.NOT_FOUND, "사용기간이 존재하지 않는 상품입니다."),
     VALIDATION_FAILURE(HttpStatus.NOT_FOUND, "입력값이 올바르지 않습니다."),
+
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 리뷰입니다."),
 
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
