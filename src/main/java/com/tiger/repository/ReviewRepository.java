@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    boolean existsByMember(Member member);
+    boolean existsByMemberAndVehicleId(Member member,Long vid);
 
     void deleteByMemberAndVehicleId(Member member,Long vid);
 

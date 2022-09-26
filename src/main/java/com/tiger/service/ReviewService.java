@@ -32,9 +32,9 @@ public class ReviewService {
         Member findmember = checkUtil.validateMember();
         Vehicle findvehicle = checkUtil.validateVehicle(vid);
 
-        if (isPresentReview(findmember)) {
+        if (isPresentReview(findmember,findvehicle.getId())) {
 
-            return updateReview(reviewRequestDto,vid,findmember); // 1인 1리뷰 한정
+            return updateReview(reviewRequestDto,vid,findmember); // 1인 1차 1리뷰 한정
         }
 
         reviewRepository.save(Review.builder()
@@ -87,7 +87,7 @@ public class ReviewService {
     public CommonResponseDto<?> deleteReview(Long vid) {
         Member member = checkUtil.validateMember();
 
-        if(!(reviewRepository.existsByMember(member))) {
+        if(!(reviewRepository.existsByMemberAndVehicleId(member,vid))) {
             return CommonResponseDto.success(REVIEW_NOT_FOUND, null);
         }
 
@@ -108,7 +108,7 @@ public class ReviewService {
     }
 
 
-    public boolean isPresentReview(Member member) {
-        return reviewRepository.existsByMember(member);
+    public boolean isPresentReview(Member member,Long vid) {
+        return reviewRepository.existsByMemberAndVehicleId(member,vid);
     }
 }
