@@ -1,6 +1,7 @@
 package com.tiger.domain.openDate.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;

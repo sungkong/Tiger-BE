@@ -5,7 +5,6 @@ import com.tiger.domain.CommonResponseDto;
 import com.tiger.domain.TokenDto;
 import com.tiger.domain.member.Member;
 import com.tiger.exception.StatusCode;
-import com.tiger.service.MemberService;
 import com.tiger.service.OAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

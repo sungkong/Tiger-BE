@@ -1,44 +1,26 @@
 package com.tiger.service;
 
 import com.tiger.domain.CommonResponseDto;
-import com.tiger.domain.member.Member;
-import com.tiger.domain.openDate.OpenDate;
 import com.tiger.domain.order.Orders;
 import com.tiger.domain.order.Status;
 import com.tiger.domain.order.dto.OrderRequestDto;
 import com.tiger.domain.payment.PayMethod;
 import com.tiger.exception.CustomException;
-import com.tiger.exception.StatusCode;
-import com.tiger.repository.MemberRepository;
 import com.tiger.repository.OpenDateRepository;
 import com.tiger.repository.OrderRepository;
 import com.tiger.utils.CheckUtil;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static com.tiger.exception.StatusCode.*;
-import static com.tiger.exception.StatusCode.REFUND_ELIGIBILITY_NOT_FOUND;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 //@ExtendWith(MockitoExtension.class)
 //@RunWith(SpringRunner.class)  //Junit 테스트 선언
