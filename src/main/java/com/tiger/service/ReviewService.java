@@ -67,12 +67,11 @@ public class ReviewService {
     }
     @Transactional
     public CommonResponseDto<?> getReviewed(Long vid) {
-        Member member = checkUtil.validateMember();
+        Member findmember = checkUtil.validateMember();
+        Review findReview = reviewRepository.findByMemberAndVehicleId(findmember,vid).orElseThrow();
 
-        Review findReview = reviewRepository.findByMemberAndVehicleId(member,vid).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
 
-
-       ReviewResponseDto reviewResponseDto = ReviewResponseDto.builder()
+        ReviewResponseDto reviewResponseDto = ReviewResponseDto.builder()
                 .author(findReview.getMember().getName())
                 .comment(findReview.getComment())
                 .rating(findReview.getRating())
