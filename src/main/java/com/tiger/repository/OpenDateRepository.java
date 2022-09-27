@@ -14,17 +14,23 @@ public interface OpenDateRepository extends JpaRepository<OpenDate, Long> {
     Optional<List<OpenDate>> findAllByVehicleIdOrderByStartDate(long vehicleId);
 
     // 주문기간만 포함된 달의 openDate만 가져오기
-    @Query(value =  "SELECT * " +
-                    "FROM open_date " +
-                    "WHERE vehicle_id = :vehicleId " +
-                    "AND (DATE_FORMAT(:startDate, '%Y-%m') = DATE_FORMAT(start_date, '%Y-%m') " +
-                    "  OR DATE_FORMAT(:endDate, '%Y-%m') = DATE_FORMAT(end_date, '%Y-%m'))", nativeQuery = true)
+    @Query(value = "SELECT * " +
+            "FROM open_date " +
+            "WHERE vehicle_id = :vehicleId " +
+            "AND (DATE_FORMAT(:startDate, '%Y-%m') = DATE_FORMAT(start_date, '%Y-%m') " +
+            "  OR DATE_FORMAT(:endDate, '%Y-%m') = DATE_FORMAT(end_date, '%Y-%m'))", nativeQuery = true)
     Optional<List<OpenDate>> findAllByIncludeOrderDateMonth(@Param("vehicleId") Long vehicleId,
                                                             @Param("startDate") LocalDate startDate,
-                                                            @Param("endDate")LocalDate endDate);
+                                                            @Param("endDate") LocalDate endDate);
+
     Optional<List<OpenDate>> findAllByVehicleIdOrderByStartDateAsc(Long vid);
 
     boolean existsByVehicleId(Long vid);
 
-    Optional<List<OpenDate>> findAllByEndDateEquals(LocalDate now);
+
+    @Query(value = "SELECT *" +
+            "FROM open_date" +
+            "WHERE (DATE_FORMAT(:now, '%Y-%m') >  DATE_FORMAT(end_date, '%Y-%m'))"
+           , nativeQuery = true)
+    Optional<List<OpenDate>> findAllByEndDatePassed(@Param("now") LocalDate now);
 }

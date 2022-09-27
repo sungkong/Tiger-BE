@@ -158,10 +158,10 @@ public class OpenDateService {
         openDateRepository.saveAll(emptyList);
     }
 
-    @Scheduled(cron = "5 0 0 * * *")
+    @Scheduled(cron = "5 40 6 * * *")
     @Transactional
     public void deletePastDate(){
-        List<OpenDate> findList = openDateRepository.findAllByEndDateEquals(LocalDate.now()).get();
+        List<OpenDate> findList = openDateRepository.findAllByEndDatePassed(LocalDate.now()).get();
         openDateRepository.deleteAll(findList);
     }
 
