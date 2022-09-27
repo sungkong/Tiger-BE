@@ -25,4 +25,6 @@ public interface OpenDateRepository extends JpaRepository<OpenDate, Long> {
     Optional<List<OpenDate>> findAllByVehicleIdOrderByStartDateAsc(Long vid);
 
     boolean existsByVehicleId(Long vid);
+
+    Optional<List<OpenDate>> findAllByEndDateEquals(LocalDate now);
 }

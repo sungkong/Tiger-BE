@@ -10,6 +10,7 @@ import com.tiger.repository.OpenDateRepository;
 import com.tiger.repository.VehicleRepository;
 import com.tiger.utils.CheckUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tiger.exception.StatusCode.*;
+import static com.tiger.exception.StatusCode.INVALID_DATE;
+import static com.tiger.exception.StatusCode.VEHICLE_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -152,10 +154,19 @@ public class OpenDateService {
                         .build())
                 .collect(Collectors.toList()); // OpenDate형으로 변환
 
-        System.out.println("emptyList = " + emptyList);
 
         openDateRepository.saveAll(emptyList);
     }
+
+    @Scheduled(cron = "5 0 0 * * *")
+    @Transactional
+    public void deletePastDate(){
+        List<OpenDate> findList = openDateRepository.findAllByEndDateEquals(LocalDate.now()).get();
+        openDateRepository.deleteAll(findList);
+    }
+
+
+
 
 }
 
