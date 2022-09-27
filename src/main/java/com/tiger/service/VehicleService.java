@@ -4,6 +4,7 @@ import com.tiger.domain.member.Member;
 import com.tiger.domain.vehicle.Vehicle;
 import com.tiger.domain.vehicle.VehicleImage;
 import com.tiger.domain.vehicle.dto.*;
+import com.tiger.domain.vehicle.review.Review;
 import com.tiger.exception.CustomException;
 import com.tiger.exception.StatusCode;
 import com.tiger.repository.*;
@@ -30,6 +31,8 @@ public class VehicleService {
     private final MemberRepository memberRepository;
     private final VehicleCustomRepository vehicleCustomRepository;
     private final HeartRepository heartRepository;
+
+    private final ReviewRepository reviewRepository;
     private final CheckUtil checkUtil;
 
     @Value("${s3.default.vehicle.image}")
@@ -75,7 +78,7 @@ public class VehicleService {
             member = checkUtil.validateMember();
         }
 
-        List<Vehicle> vehicleList = vehicleRepository.findAllByTypeAndIsValidOrderByModifiedAtDesc(type, true).orElseThrow(()-> {
+        List<Vehicle> vehicleList = vehicleRepository.findAllByTypeAndIsValidOrderByModifiedAtDesc(type, true).orElseThrow(() -> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
         });
 
@@ -83,11 +86,15 @@ public class VehicleService {
 
         for (Vehicle vehicle : vehicleList) {
             VehicleCommonResponseDto vehicleCommonResponseDto = new VehicleCommonResponseDto(vehicle);
-            if(member != null){
-                if(heartRepository.findByMemberAndVehicle(member, vehicle).isPresent()){
+            if (member != null) {
+                if (heartRepository.findByMemberAndVehicle(member, vehicle).isPresent()) {
                     vehicleCommonResponseDto.setHeart(true);
                 }
             }
+
+            Long finalRating = calculateRating(vehicle.getId());
+            vehicleCommonResponseDto.setAverageRating(finalRating);
+
             vehicleCommonResponseDtos.add(vehicleCommonResponseDto);
 
         }
@@ -106,11 +113,16 @@ public class VehicleService {
         Member owner = findMemberByMemberId(vehicle.getOwnerId());
 
         VehicleDetailResponseDto vehicleDetailResponseDto = new VehicleDetailResponseDto(vehicle, owner, startDate, endDate);
-        if(renter != null){
-            if(heartRepository.findByMemberAndVehicle(renter, vehicle).isPresent()){
+        if (renter != null) {
+            if (heartRepository.findByMemberAndVehicle(renter, vehicle).isPresent()) {
                 vehicleDetailResponseDto.setHeart(true);
             }
         }
+
+        Long finalRating = calculateRating(vehicle.getId());
+        vehicleDetailResponseDto.setAverageRating(finalRating);
+
+
         return vehicleDetailResponseDto;
     }
 
@@ -133,7 +145,7 @@ public class VehicleService {
 
         Member member = findMemberByMemberId(ownerId);
 
-        List<Vehicle> vehicleList = vehicleRepository.findAllByOwnerIdAndIsValidOrderByCreatedAtDesc(ownerId, true).orElseThrow(()-> {
+        List<Vehicle> vehicleList = vehicleRepository.findAllByOwnerIdAndIsValidOrderByCreatedAtDesc(ownerId, true).orElseThrow(() -> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
         });
 
@@ -205,7 +217,7 @@ public class VehicleService {
             member = checkUtil.validateMember();
         }
 
-        LocalDate startDate =  vehicleSearch.getStartDate();
+        LocalDate startDate = vehicleSearch.getStartDate();
         LocalDate endDate = vehicleSearch.getEndDate();
 //        String location = vehicleSearch.getLocation();
         Double locationX = vehicleSearch.getLocationX();
@@ -218,12 +230,18 @@ public class VehicleService {
 
         for (VehicleCustomResponseDto vehicleCustomResponseDto : vehicleCustomResponseDtos) {
             VehicleSearchResponseDto vehicleSearchResponseDto = new VehicleSearchResponseDto(vehicleCustomResponseDto, startDate, endDate);
-            if(member != null){
-                if(heartRepository.findByMemberAndVehicleId(member, vehicleSearchResponseDto.getVid()).isPresent()){
+            if (member != null) {
+                if (heartRepository.findByMemberAndVehicleId(member, vehicleSearchResponseDto.getVid()).isPresent()) {
                     vehicleSearchResponseDto.setHeart(true);
                 }
             }
+
+            Long finalRating = calculateRating(vehicleSearchResponseDto.getVid());
+            vehicleSearchResponseDto.setAverageRating(finalRating);
+
+
             vehicleSearchResponseDtos.add(vehicleSearchResponseDto);
+
         }
 
         return vehicleSearchResponseDtos;
@@ -246,7 +264,7 @@ public class VehicleService {
         for (VehicleImage vehicleImage : vehicleImages) {
 
             String imageUrl = vehicleImage.getImageUrl();
-            String key = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
+            String key = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
             awsS3Service.deleteFile(key);
         }
         vehicleImageRepository.deleteAllByVehicle_Id(vId);
@@ -261,6 +279,22 @@ public class VehicleService {
                             .build()
             );
         }
+    }
+
+    public Long calculateRating(Long vid){
+        List<Review> reviewList = reviewRepository.findAllByVehicleId(vid).orElse(null);
+
+        if (reviewList != null){
+
+            double sum = 0L;
+            for (Review review: reviewList){
+                Long rating = review.getRating();
+                sum += rating;
+            }
+            return Math.round(sum / reviewList.size());
+        }
+
+        return null;
     }
 
 

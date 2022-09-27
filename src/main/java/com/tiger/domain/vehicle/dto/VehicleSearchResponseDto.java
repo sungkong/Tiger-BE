@@ -62,6 +62,8 @@ public class VehicleSearchResponseDto {
 
     private LocalDate endDate;
 
+    private Long averageRating;
+
 
     public VehicleSearchResponseDto(VehicleCustomResponseDto vehicleCustomResponseDto, LocalDate startDate, LocalDate endDate) {
         this.vid = vehicleCustomResponseDto.getVid();

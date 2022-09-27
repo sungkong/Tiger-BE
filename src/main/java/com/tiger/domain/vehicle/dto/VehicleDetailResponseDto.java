@@ -81,6 +81,8 @@ public class VehicleDetailResponseDto {
     // 예약 종료일
     private LocalDate endDate;
 
+    private Long averageRating;
+
     public VehicleDetailResponseDto(Vehicle vehicle, Member member, LocalDate startDate, LocalDate endDate) {
         this.vid = vehicle.getId();
         this.ownerId = vehicle.getOwnerId();

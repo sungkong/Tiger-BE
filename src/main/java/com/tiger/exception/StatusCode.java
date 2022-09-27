@@ -33,6 +33,8 @@ public enum StatusCode {
     REVIEW_UPDATED(HttpStatus.OK, "리뷰 수정 성공"),
     REVIEW_LIST_SUCCESS(HttpStatus.OK, "리뷰 조회 성공"),
 
+    REVIEW_FIRST(HttpStatus.OK, "리뷰 최초 등록"),
+
     REVIEW_DELETED(HttpStatus.OK, "리뷰 삭제 성공"),
 
 

@@ -68,19 +68,22 @@ public class ReviewService {
     @Transactional
     public CommonResponseDto<?> getReviewed(Long vid) {
         Member findmember = checkUtil.validateMember();
-        Review findReview = reviewRepository.findByMemberAndVehicleId(findmember,vid).orElseThrow();
+        Review findReview = reviewRepository.findByMemberAndVehicleId(findmember,vid).orElse(null);
 
 
-        ReviewResponseDto reviewResponseDto = ReviewResponseDto.builder()
-                .author(findReview.getMember().getName())
-                .comment(findReview.getComment())
-                .rating(findReview.getRating())
-                .createdAt(findReview.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                .build();
+        if (findReview != null){
+            return CommonResponseDto.success(REVIEW_LIST_SUCCESS,ReviewResponseDto.builder()
+                    .author(findReview.getMember().getName())
+                    .comment(findReview.getComment())
+                    .rating(findReview.getRating())
+                    .createdAt(findReview.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                    .build());
+        }
+        else {
+            return CommonResponseDto.success(REVIEW_FIRST, null);
+        }
 
 
-
-        return CommonResponseDto.success(REVIEW_LIST_SUCCESS, reviewResponseDto);
     }
     @Transactional
     public CommonResponseDto<?> deleteReview(Long vid) {
