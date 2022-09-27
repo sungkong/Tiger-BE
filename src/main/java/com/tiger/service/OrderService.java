@@ -264,6 +264,7 @@ public class OrderService {
         for(int i=0; i<list.size(); i++){
             Orders order = list.get(i);
             order.setStatus(Status.USE);
+
             log.info("주문상태 USE로 변경 : {} ", order.getId());
         }
     }
