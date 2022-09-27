@@ -93,7 +93,7 @@ public class VehicleController {
     @ApiOperation(value = "차량 수정")
     @PutMapping("/management/{vId}")
     public CommonResponseDto<?> updateVehicle(@PathVariable Long vId,
-                                       @ModelAttribute VehicleRequestDto requestDto,
+                                       @ModelAttribute VehicleUpdateRequestDto requestDto,
                                        @AuthenticationPrincipal UserDetails userDetails) {
 
         Member member = ((UserDetailsImpl) userDetails).getMember();

@@ -41,8 +41,8 @@ public class VehicleCustomRepository {
                                                                                 .from(orders)
                                                                                 .where(orders.startDate.between(startDate, endDate)
                                                                                         .or(orders.endDate.between(startDate, endDate)
-                                                                                                .and(orders.startDate.loe(startDate)
-                                                                                                .and(orders.endDate.goe(endDate)
+                                                                                                .or(orders.startDate.lt(startDate) // and --> or, loe --> lt
+                                                                                                .and(orders.endDate.gt(endDate) // goe --> gt
                                                                                                         .and(orders.status.ne(Status.valueOf("CANCEL")))
                                                                                                 )))
 

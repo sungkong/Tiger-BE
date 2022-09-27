@@ -116,10 +116,6 @@ public class MemberService {
 
         String refreshToken = extractRefreshToken(httpServletRequest);
 
-        // 리프레시 토큰 검증
-        if (!tokenProvider.validateToken(refreshToken)) {
-            throw new CustomException(StatusCode.INVALID_AUTH_TOKEN);
-        }
         Member member = tokenProvider.getMemberFromAuthentication();
         if (null == member) {
             throw new CustomException(StatusCode.USER_NOT_FOUND);

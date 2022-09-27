@@ -83,6 +83,9 @@ public class VehicleDetailResponseDto {
 
     private Long averageRating;
 
+    // 썸네일
+    private String thumbnail;
+
     public VehicleDetailResponseDto(Vehicle vehicle, Member member, LocalDate startDate, LocalDate endDate) {
         this.vid = vehicle.getId();
         this.ownerId = vehicle.getOwnerId();
@@ -106,6 +109,7 @@ public class VehicleDetailResponseDto {
         this.profileImage = member.getProfileImage();
         this.startDate = startDate;
         this.endDate = endDate;
+        this.thumbnail = vehicle.getThumbnail();
     }
 
     // 좋아요 여부

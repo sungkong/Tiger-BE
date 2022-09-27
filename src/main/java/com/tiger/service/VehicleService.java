@@ -78,7 +78,7 @@ public class VehicleService {
             member = checkUtil.validateMember();
         }
 
-        List<Vehicle> vehicleList = vehicleRepository.findAllByTypeAndIsValidOrderByModifiedAtDesc(type, true).orElseThrow(() -> {
+        List<Vehicle> vehicleList = vehicleRepository.findAllByIsValid(true).orElseThrow(() -> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
         });
 
@@ -171,7 +171,7 @@ public class VehicleService {
 
 
     @Transactional
-    public String updateVehicle(Long vId, VehicleRequestDto requestDto, Long ownerId) {
+    public String updateVehicle(Long vId, VehicleUpdateRequestDto requestDto, Long ownerId) {
 
         Vehicle vehicle = findVehicleByVehicleId(vId);
 
@@ -179,15 +179,24 @@ public class VehicleService {
             throw new CustomException(StatusCode.INVALID_AUTH_UPDATE);
         }
 
-        deleteAllVehicleImages(vId);
+        List<String> removeList = requestDto.getRemoveList();
+
+        if (!removeList.isEmpty()) {
+            for (String imageUrl : removeList) {
+                String key = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
+                awsS3Service.deleteFile(key);
+                vehicleImageRepository.deleteByImageUrl(imageUrl);
+            }
+        }
 
         List<MultipartFile> multipartFiles = requestDto.getImageList();
 
-        List<String> imageUrlList = awsS3Service.uploadFile(multipartFiles);
+        if (!multipartFiles.isEmpty()) {
+            List<String> imageUrlList = awsS3Service.uploadFile(multipartFiles);
+            saveVehicleImages(imageUrlList, vehicle);
+        }
 
-        saveVehicleImages(imageUrlList, vehicle);
-
-        vehicle.update(requestDto, ownerId, imageUrlList.get(0));
+        vehicle.update(requestDto, ownerId);
 
         return vehicle.getVname();
     }
