@@ -13,5 +13,4 @@ public class NotificationCountDto {
 
     private Long count;
 
-
 }

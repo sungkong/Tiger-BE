@@ -4,6 +4,7 @@ package com.tiger.domain.vehicle;
 import com.tiger.domain.Timestamped;
 import com.tiger.domain.order.Orders;
 import com.tiger.domain.vehicle.dto.VehicleRequestDto;
+import com.tiger.domain.vehicle.dto.VehicleUpdateRequestDto;
 import com.tiger.domain.vehicle.heart.Heart;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -106,7 +107,7 @@ public class Vehicle extends Timestamped {
 
 
 
-    public void update(VehicleRequestDto requestDto, Long ownerId, String thumbnail) {
+    public void update(VehicleUpdateRequestDto requestDto, Long ownerId) {
         this.ownerId = ownerId;
         this.price = requestDto.getPrice();
         this.description = requestDto.getDescription();
@@ -119,7 +120,10 @@ public class Vehicle extends Timestamped {
         this.passengers = requestDto.getPassengers();
         this.transmission = requestDto.getTransmission();
         this.fuelEfficiency = requestDto.getFuelEfficiency();
-        this.thumbnail = thumbnail;
+    }
+
+    public void updateThumbnail(String newThumbnailUrl) {
+        this.thumbnail = newThumbnailUrl;
     }
 
     public void delete(String defaultThumbnail) {

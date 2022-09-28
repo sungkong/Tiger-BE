@@ -1,6 +1,5 @@
 package com.tiger.domain.order.dto;
 
-import com.tiger.domain.payment.PayMethod;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

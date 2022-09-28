@@ -5,6 +5,7 @@ import com.tiger.domain.TokenDto;
 import com.tiger.domain.UserDetailsImpl;
 import com.tiger.domain.member.Member;
 import com.tiger.exception.CustomException;
+import com.tiger.exception.StatusCode;
 import com.tiger.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -31,6 +32,7 @@ public class TokenProvider {
 
     private static final String BEARER_TYPE = "Bearer";
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24; // 24시간으로 변경
+//    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60; // 1분
     private static final long REFRESH_TOKEN_EXPRIRE_TIME = 1000 * 60 * 60 * 24 * 7;
 
     private final Key key;
@@ -91,12 +93,17 @@ public class TokenProvider {
             log.info("유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT token 입니다."); // 여기에서 토큰 재발급
+            throwExpiredTokenException();
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰 입니다.");
         } catch (IllegalArgumentException e) {
             log.info("잘못된 JWT 토큰 입니다.");
         }
         return false;
+    }
+
+    private void throwExpiredTokenException() {
+        throw new CustomException(StatusCode.EXPIRED_AUTH_TOKEN);
     }
 
     public Authentication getAuthentication(String accessToken) {

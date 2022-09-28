@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class VehicleDetailResponseDto {
+public class VehicleUpdatePageResponseDto {
 
     // 상품 식별번호
     private Long vid;
@@ -86,7 +86,8 @@ public class VehicleDetailResponseDto {
     // 썸네일
     private String thumbnail;
 
-    public VehicleDetailResponseDto(Vehicle vehicle, Member member, LocalDate startDate, LocalDate endDate) {
+
+    public VehicleUpdatePageResponseDto(Vehicle vehicle, Member member, LocalDate startDate, LocalDate endDate) {
         this.vid = vehicle.getId();
         this.ownerId = vehicle.getOwnerId();
         this.price = vehicle.getPrice();
@@ -94,7 +95,7 @@ public class VehicleDetailResponseDto {
         this.location = vehicle.getLocation();
         this.locationX = vehicle.getLocationX();
         this.locationY = vehicle.getLocationY();
-        this.imageList = vehicle.getImages().stream().map(VehicleImage::getImageUrl).collect(Collectors.toList());
+        this.imageList = vehicle.getImages().stream().map(VehicleImage::getImageUrl).filter(v -> !v.equals(vehicle.getThumbnail())).collect(Collectors.toList());
         this.vbrand = vehicle.getVbrand();
         this.vname = vehicle.getVname();
         this.type = vehicle.getType();
@@ -117,4 +118,5 @@ public class VehicleDetailResponseDto {
     public void setHeart(boolean heart) {
         isHeart = heart;
     }
+
 }

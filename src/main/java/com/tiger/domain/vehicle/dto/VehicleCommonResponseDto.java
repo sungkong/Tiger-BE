@@ -62,6 +62,9 @@ public class VehicleCommonResponseDto {
     // 차 연비
     private String fuelEfficiency;
 
+    // 차 리뷰평점
+   private Long averageRating;
+
     // 좋아요 여부
     @Builder.Default
     private boolean isHeart = false;

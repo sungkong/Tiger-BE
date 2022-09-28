@@ -10,6 +10,9 @@ import com.tiger.service.OpenDateService;
 import com.tiger.service.VehicleService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,10 +49,12 @@ public class VehicleController {
 
     @ApiOperation(value = "수입 차량 조회")
     @GetMapping
-    public CommonResponseDto<?> readAllVehiclesByTypeImported(HttpServletRequest request) {
+    public CommonResponseDto<?> readAllVehiclesByTypeImported(HttpServletRequest request,
+                                                              @PageableDefault(size = 20) Pageable pageable) {
         String type = "수입";
 
-        List<VehicleCommonResponseDto> vehicleCommonResponseDtos = vehicleService.readAllVehiclesByType(type, request);
+//        List<VehicleCommonResponseDto> vehicleCommonResponseDtos = vehicleService.readAllVehiclesByType(type, request, pageable);
+        Page<VehicleCommonResponseDto> vehicleCommonResponseDtos = vehicleService.readAllVehiclesByType(type, request, pageable);
 
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleCommonResponseDtos);
     }
@@ -85,15 +90,15 @@ public class VehicleController {
 
         Member member = ((UserDetailsImpl) userDetails).getMember();
 
-        VehicleDetailResponseDto vehicleDetailResponseDto = vehicleService.readOneVehicleForVehicleUpdatePage(vId, member.getId());
+        VehicleUpdatePageResponseDto vehicleUpdatePageResponseDto = vehicleService.readOneVehicleForVehicleUpdatePage(vId, member.getId());
 
-        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleDetailResponseDto);
+        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleUpdatePageResponseDto);
     }
 
     @ApiOperation(value = "차량 수정")
     @PutMapping("/management/{vId}")
     public CommonResponseDto<?> updateVehicle(@PathVariable Long vId,
-                                       @ModelAttribute VehicleRequestDto requestDto,
+                                       @ModelAttribute VehicleUpdateRequestDto requestDto,
                                        @AuthenticationPrincipal UserDetails userDetails) {
 
         Member member = ((UserDetailsImpl) userDetails).getMember();
@@ -117,11 +122,30 @@ public class VehicleController {
 
     @ApiOperation(value = "차량 검색")
     @PostMapping("/search")
-    public CommonResponseDto<?> searchVehicles(@RequestBody VehicleSearch vehicleSearch, HttpServletRequest request) {
+    public CommonResponseDto<?> searchVehicles(@RequestBody VehicleSearch vehicleSearch,
+                                               HttpServletRequest request,
+                                               @PageableDefault(size = 6) Pageable pageable) {
 
-        List<VehicleSearchResponseDto> vehicleSearchResponseDtos = vehicleService.searchVehicles(vehicleSearch, request);
+        Page<VehicleSearchResponseDto> vehicleSearchResponseDtos = vehicleService.searchVehicles(vehicleSearch, request, pageable);
 
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleSearchResponseDtos);
     }
+
+    @ApiOperation(value = "썸네일 이미지 수정")
+    @PutMapping("/thumbnail/{vId}")
+    public CommonResponseDto<?> updateThumbnail(@PathVariable Long vId,
+                                                @ModelAttribute VehicleThumbnailRequestDto requestDto,
+                                                @AuthenticationPrincipal UserDetails userDetails) {
+
+        Member member = ((UserDetailsImpl) userDetails).getMember();
+
+        VehicleThumbnailResponseDto vehicleThumbnailResponseDto = vehicleService.updateVehicleThumbnail(vId, requestDto, member);
+
+        return CommonResponseDto.success(StatusCode.THUMBNAIL_UPDATED, vehicleThumbnailResponseDto);
+
+    }
+
+
+
 
 }

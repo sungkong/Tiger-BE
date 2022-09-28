@@ -1,14 +1,8 @@
 package com.tiger.domain.order.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.StringTemplate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @NoArgsConstructor

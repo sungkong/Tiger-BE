@@ -21,12 +21,10 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
-import static com.tiger.exception.StatusCode.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.tiger.exception.StatusCode.OPENDATE_NOT_FOUND;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class CheckUtilTest {

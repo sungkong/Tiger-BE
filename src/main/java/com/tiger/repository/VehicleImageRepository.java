@@ -10,4 +10,6 @@ public interface VehicleImageRepository extends JpaRepository<VehicleImage, Long
     List<VehicleImage> findAllByVehicle_Id(Long id);
 
     void deleteAllByVehicle_Id(Long id);
+
+    void deleteByImageUrl(String imageUrl);
 }
