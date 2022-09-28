@@ -30,7 +30,7 @@ public interface OpenDateRepository extends JpaRepository<OpenDate, Long> {
 
     @Query(value = "SELECT *" +
             "FROM open_date" +
-            "WHERE (DATE_FORMAT(:now, '%Y-%m') >  DATE_FORMAT(end_date, '%Y-%m'))"
+            "WHERE (DATE_FORMAT(now(), '%Y-%m-%d') >  DATE_FORMAT(end_date, '%Y-%m-%d'))"
            , nativeQuery = true)
-    Optional<List<OpenDate>> findAllByEndDatePassed(@Param("now") LocalDate now);
+    Optional<List<OpenDate>> findAllByEndDatePassed();
 }
