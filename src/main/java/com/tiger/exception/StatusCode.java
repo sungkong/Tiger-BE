@@ -36,6 +36,7 @@ public enum StatusCode {
     REVIEW_FIRST(HttpStatus.OK, "리뷰 최초 등록"),
 
     REVIEW_DELETED(HttpStatus.OK, "리뷰 삭제 성공"),
+    THUMBNAIL_UPDATED(HttpStatus.OK, "썸네일이 수정 성공"),
 
 
 

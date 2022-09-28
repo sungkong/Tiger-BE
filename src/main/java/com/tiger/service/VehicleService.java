@@ -256,6 +256,44 @@ public class VehicleService {
         return vehicleSearchResponseDtos;
     }
 
+
+
+    @Transactional
+    public VehicleThumbnailResponseDto updateVehicleThumbnail(Long vId, VehicleThumbnailRequestDto requestDto, Member member) {
+
+        Vehicle vehicle = findVehicleByVehicleId(vId);
+        if (!vehicle.getOwnerId().equals(member.getId())) {
+            throw new CustomException(StatusCode.INVALID_AUTH_UPDATE);
+        }
+
+        // 기존 썸네일 삭제
+        String oldThumbnail = requestDto.getOldThumbnail().get(0);
+        String key = oldThumbnail.substring(oldThumbnail.lastIndexOf("/")+1);
+        awsS3Service.deleteFile(key);
+        vehicleImageRepository.deleteByImageUrl(oldThumbnail);
+
+        // 새로운 썸네일 업로드 및 저장
+        List<MultipartFile> newThumbnailFile = requestDto.getNewThumbnail();
+        List<String> newThumbnailUrlList = awsS3Service.uploadFile(newThumbnailFile);
+        String newThumbnailUrl = newThumbnailUrlList.get(0);
+        VehicleImage newVehicleThumbnailImage = VehicleImage.builder()
+                .imageUrl(newThumbnailUrl)
+                .vehicle(vehicle)
+                .build();
+        vehicleImageRepository.save(newVehicleThumbnailImage);
+
+        // 새로운 썸네일 수정
+        vehicle.updateThumbnail(newThumbnailUrl);
+        String thumbnail = vehicle.getThumbnail();
+
+        // VehicleThumbnailResponseDto에 담기
+        return new VehicleThumbnailResponseDto(thumbnail);
+
+    }
+
+
+
+
     public Vehicle findVehicleByVehicleId(Long vId) {
         return vehicleRepository.findByIdAndIsValid(vId, true).orElseThrow(() -> {
             throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);

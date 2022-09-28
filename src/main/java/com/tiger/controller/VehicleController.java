@@ -124,4 +124,21 @@ public class VehicleController {
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleSearchResponseDtos);
     }
 
+    @ApiOperation(value = "썸네일 이미지 수정")
+    @PutMapping("/thumbnail/{vId}")
+    public CommonResponseDto<?> updateThumbnail(@PathVariable Long vId,
+                                                @ModelAttribute VehicleThumbnailRequestDto requestDto,
+                                                @AuthenticationPrincipal UserDetails userDetails) {
+
+        Member member = ((UserDetailsImpl) userDetails).getMember();
+
+        VehicleThumbnailResponseDto vehicleThumbnailResponseDto = vehicleService.updateVehicleThumbnail(vId, requestDto, member);
+
+        return CommonResponseDto.success(StatusCode.THUMBNAIL_UPDATED, vehicleThumbnailResponseDto);
+
+    }
+
+
+
+
 }

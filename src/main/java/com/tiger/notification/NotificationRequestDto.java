@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationRequestDto {
-    // 받는사람 userid
+
     private Member receiver;
 
 }

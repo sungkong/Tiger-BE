@@ -122,6 +122,10 @@ public class Vehicle extends Timestamped {
         this.fuelEfficiency = requestDto.getFuelEfficiency();
     }
 
+    public void updateThumbnail(String newThumbnailUrl) {
+        this.thumbnail = newThumbnailUrl;
+    }
+
     public void delete(String defaultThumbnail) {
         this.thumbnail = defaultThumbnail;
         this.isValid = false;
