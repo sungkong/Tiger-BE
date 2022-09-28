@@ -61,6 +61,7 @@ public enum StatusCode {
     UNSUPPORTED_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "지원되지 않는 JWT 토큰 입니다"),
     INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 JWT 토큰 입니다"),
     INVALID_CHATROOM_EXIT(HttpStatus.UNAUTHORIZED, "잘못된 방식으로 채팅방을 나갔습니다."),
+    INVALID_RETURN_STATUS(HttpStatus.UNAUTHORIZED, "사용중인 상품이 아니라 반납을 할 수 없습니다."),
 
     /* 403 FORBIDDEN : 컨텐츠에 접근할 권리가 없음 */
     EXPIRED_DATE_FORBIDDEN(HttpStatus.FORBIDDEN, "이전 날짜들을 예약할 수 없습니다."),

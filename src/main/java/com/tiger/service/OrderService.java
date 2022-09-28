@@ -46,7 +46,7 @@ public class OrderService {
 
     // 주문하기
     @Transactional
-    public CommonResponseDto<?> order(HttpServletRequest request, Long vehicleId, OrderRequestDto orderRequestDto){
+    public CommonResponseDto<?> order(Long vehicleId, OrderRequestDto orderRequestDto){
 
         // 회원 검증
         Member member = checkUtil.validateMember();
@@ -94,7 +94,7 @@ public class OrderService {
 
     // 주문 리스트(렌터)
     @Transactional(readOnly = true)
-    public CommonResponseDto<?> getOrderListRenter(HttpServletRequest request, String status, int limit, int offset) {
+    public CommonResponseDto<?> getOrderListRenter(String status, int limit, int offset) {
 
         // 회원 검증
         Member member = checkUtil.validateMember();
@@ -143,13 +143,13 @@ public class OrderService {
 
     // 환불(렌터)
     @Transactional
-    public CommonResponseDto<?> refund(HttpServletRequest request, Long orderId) {
+    public CommonResponseDto<?> refund(Long orderId) {
 
         Orders order = checkUtil.validateOrder(orderId);
         Member member = checkUtil.validateMember();
         // 주문 번호 존재 검증
         // 로그인 유저가 주문한 것인지 확인하는 검증
-        checkUtil.validateOwner(member, order);
+        checkUtil.validateRenter(member, order);
         // 환불 가능한 상태 검증
         List<Payment> payments = paymentRepository.findAllByOrderId(order.getId()).orElseThrow(
                 () -> new CustomException(PAYMENT_NOT_FOUND)
@@ -179,24 +179,24 @@ public class OrderService {
 
     // 반납 확인
     @Transactional
-    public CommonResponseDto<?> returnVehicle(HttpServletRequest request, Long orderId){
+    public CommonResponseDto<?> returnVehicle(Long orderId){
 
 
         // 주문 번호 존재 검증
         Orders order = checkUtil.validateOrder(orderId);
-        // 로그인 유저와 오너가 동일한지 검증
+
         Member member = checkUtil.validateMember();
-        checkUtil.validateOwner(member, order);
-        // 조기 반납인 경우 남은 기간 재오픈
+        // 반납 가능한지 검증
+        checkUtil.validateReturn(member, order);
 
         // 반납완료로 상태 변경하기
         order.setReturn();
-        return CommonResponseDto.success(RETURN_SUCCESS, null);
+        return CommonResponseDto.success(RETURN_SUCCESS, orderId);
     }
 
     //판매리스트 (오너)
     @Transactional(readOnly = true)
-    public CommonResponseDto<?> getOrderListOwner(HttpServletRequest request, String status, int limit, int offset) {
+    public CommonResponseDto<?> getOrderListOwner(String status, int limit, int offset) {
 
         /*
         * 렌터와 코드는 똑같으나, 추후 렌터의 주문리스트와 오너의 주문리스트에 차이를 둘 수도 있을 것 같아 분리함

@@ -13,6 +13,7 @@ import com.tiger.exception.CustomException;
 import com.tiger.exception.StatusCode;
 import com.tiger.repository.*;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -69,9 +70,31 @@ public class CheckUtil {
         );
     }
 
-    // 로그인 계정과 상품주인 확인
+    // 로그인 계정과 상품주인 일치 확인
     @Transactional(readOnly = true)
     public void validateOwner(Member member, Orders order){
+        if(!order.getVehicle().getOwnerId().equals(member.getId())){
+            throw new CustomException(HOST_NOT_FOUND);
+        }
+    }
+
+    /**
+     * 손성우 2022.9.29.
+     * 반납 검증
+     * @param member, order
+     */
+    @Transactional(readOnly = true)
+    public void validateReturn(Member member, Orders order){
+
+        validateOwner(member, order);
+        if(!order.getStatus().equals(Status.USE)){
+            throw new CustomException(INVALID_RETURN_STATUS);
+        }
+    }
+
+    // 로그인 계정과 상품주인 확인
+    @Transactional(readOnly = true)
+    public void validateRenter(Member member, Orders order){
         if(!order.getMember().getId().equals(member.getId())){
             throw new CustomException(HOST_NOT_FOUND);
         }
@@ -154,34 +177,5 @@ public class CheckUtil {
          );
          return bank;
      }
-
-    /**
-     * 손성우 2022.9.7.
-     * 환불 검증
-     * @param order
-     * @return bank
-    */
-     @Transactional(readOnly = true)
-     public Bank validateReturn(Orders order){
-
-         List<Payment> payments = paymentRepository.findAllByOrderId(order.getId()).orElseThrow(
-                 () -> new CustomException(PAYMENT_NOT_FOUND)
-         );
-         Long sum = 0l;
-         for (Payment payment : payments) {
-             sum += payment.getPaidAmount();
-         }
-         Bank bank = validateBank(order);
-         if(bank.getMoney() - sum < 0){
-             throw new CustomException(EXCESS_AMOUNT_BANK);
-         }
-
-         LocalDate now = LocalDate.now();
-         if(now.compareTo(order.getStartDate()) >= 0 || !order.getStatus().toString().equals("RESERVED")){
-             throw new CustomException(REFUND_ELIGIBILITY_NOT_FOUND);
-         }
-         return bank;
-     }
-
 
 }
