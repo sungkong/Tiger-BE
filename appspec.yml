@@ -9,6 +9,7 @@ permission:
   - object: /
     pattern: "**"
     owner: ubuntu
+    mode: 755
     group: ubuntu
 
 
