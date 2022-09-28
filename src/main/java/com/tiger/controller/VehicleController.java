@@ -124,7 +124,7 @@ public class VehicleController {
     @PostMapping("/search")
     public CommonResponseDto<?> searchVehicles(@RequestBody VehicleSearch vehicleSearch,
                                                HttpServletRequest request,
-                                               @PageableDefault(size = 20) Pageable pageable) {
+                                               @PageableDefault(size = 6) Pageable pageable) {
 
         Page<VehicleSearchResponseDto> vehicleSearchResponseDtos = vehicleService.searchVehicles(vehicleSearch, request, pageable);
 
