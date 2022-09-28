@@ -10,6 +10,9 @@ import com.tiger.service.OpenDateService;
 import com.tiger.service.VehicleService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,10 +49,12 @@ public class VehicleController {
 
     @ApiOperation(value = "수입 차량 조회")
     @GetMapping
-    public CommonResponseDto<?> readAllVehiclesByTypeImported(HttpServletRequest request) {
+    public CommonResponseDto<?> readAllVehiclesByTypeImported(HttpServletRequest request,
+                                                              @PageableDefault(size = 20) Pageable pageable) {
         String type = "수입";
 
-        List<VehicleCommonResponseDto> vehicleCommonResponseDtos = vehicleService.readAllVehiclesByType(type, request);
+//        List<VehicleCommonResponseDto> vehicleCommonResponseDtos = vehicleService.readAllVehiclesByType(type, request, pageable);
+        Page<VehicleCommonResponseDto> vehicleCommonResponseDtos = vehicleService.readAllVehiclesByType(type, request, pageable);
 
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleCommonResponseDtos);
     }

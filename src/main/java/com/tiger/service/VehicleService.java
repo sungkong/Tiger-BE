@@ -11,6 +11,9 @@ import com.tiger.repository.*;
 import com.tiger.utils.CheckUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,16 +74,19 @@ public class VehicleService {
     }
 
 
-    public List<VehicleCommonResponseDto> readAllVehiclesByType(String type, HttpServletRequest request) {
+    public Page<VehicleCommonResponseDto> readAllVehiclesByType(String type, HttpServletRequest request, Pageable pageable) {
 
         Member member = null;
         if (null != request.getHeader("RefreshToken") && null != request.getHeader("Authorization")) {
             member = checkUtil.validateMember();
         }
 
-        List<Vehicle> vehicleList = vehicleRepository.findAllByIsValid(true).orElseThrow(() -> {
-            throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
-        });
+//        List<Vehicle> vehicleList = vehicleRepository.findAllByIsValid(true).orElseThrow(() -> {
+//            throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
+//        });
+
+        Page<Vehicle> vehicleList = vehicleRepository.findAllByIsValid(true, pageable);
+
 
         List<VehicleCommonResponseDto> vehicleCommonResponseDtos = new ArrayList<>();
 
@@ -98,7 +104,11 @@ public class VehicleService {
             vehicleCommonResponseDtos.add(vehicleCommonResponseDto);
 
         }
-        return vehicleCommonResponseDtos;
+
+//        return vehicleCommonResponseDtos;
+
+        return new PageImpl(vehicleCommonResponseDtos, vehicleList.getPageable(), vehicleList.getTotalElements());
+
     }
 
 
