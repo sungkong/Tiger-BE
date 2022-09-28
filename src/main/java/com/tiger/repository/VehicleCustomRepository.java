@@ -9,6 +9,9 @@ import com.tiger.domain.vehicle.QVehicle;
 import com.tiger.domain.vehicle.dto.QVehicleCustomResponseDto;
 import com.tiger.domain.vehicle.dto.VehicleCustomResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -24,9 +27,9 @@ public class VehicleCustomRepository {
     QOpenDate openDate = QOpenDate.openDate;
 
     //상품 검색
-    public List<VehicleCustomResponseDto> searchVehicle(LocalDate startDate, LocalDate endDate, Double locationX, Double locationY, String type) {
+    public Page<VehicleCustomResponseDto> searchVehicle(LocalDate startDate, LocalDate endDate, Double locationX, Double locationY, String type, Pageable pageable) {
 
-        return jpaQueryFactory.select(new QVehicleCustomResponseDto(vehicle.id, vehicle.ownerId, vehicle.price, vehicle.description, vehicle.location, vehicle.locationX, vehicle.locationY, vehicle.thumbnail, vehicle.vbrand, vehicle.vname, vehicle.type, vehicle.years, vehicle.fuelType, vehicle.passengers, vehicle.transmission, vehicle.fuelEfficiency))
+        List<VehicleCustomResponseDto> vehicleCustomResponseDtos =jpaQueryFactory.select(new QVehicleCustomResponseDto(vehicle.id, vehicle.ownerId, vehicle.price, vehicle.description, vehicle.location, vehicle.locationX, vehicle.locationY, vehicle.thumbnail, vehicle.vbrand, vehicle.vname, vehicle.type, vehicle.years, vehicle.fuelType, vehicle.passengers, vehicle.transmission, vehicle.fuelEfficiency))
                 .from(vehicle)
                 .where(vehicle.type.eq(type)
                         .and(vehicle.isValid.eq(true)
@@ -55,7 +58,42 @@ public class VehicleCustomRepository {
                         )))
 
                 )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        Long count =jpaQueryFactory.select(vehicle.count())
+                .from(vehicle)
+                .where(vehicle.type.eq(type)
+                        .and(vehicle.isValid.eq(true)
+                                .and(vehicle.locationX.between((locationX-0.2), (locationX+0.2)).and(vehicle.locationY.between((locationY-0.2), (locationY+0.2)))
+                                        .and(vehicle.id.in(
+                                                        JPAExpressions.select(openDate.vehicle.id)
+                                                                .from(openDate)
+                                                                .where(openDate.startDate.loe(startDate)
+                                                                        .and(openDate.endDate.goe(endDate)
+                                                                                .and(openDate.vehicle.id.notIn(
+                                                                                                JPAExpressions.select(orders.vehicle.id)
+                                                                                                        .from(orders)
+                                                                                                        .where(orders.startDate.between(startDate, endDate)
+                                                                                                                .or(orders.endDate.between(startDate, endDate)
+                                                                                                                        .or(orders.startDate.lt(startDate) // and --> or, loe --> lt
+                                                                                                                                .and(orders.endDate.gt(endDate) // goe --> gt
+                                                                                                                                        .and(orders.status.ne(Status.valueOf("CANCEL")))
+                                                                                                                                )))
+
+                                                                                                        )
+
+                                                                                        )
+                                                                                )))
+
+                                                )
+                                        )))
+
+                )
+                .fetchOne();
+
+        return new PageImpl(vehicleCustomResponseDtos, pageable, count);
     }
 
 

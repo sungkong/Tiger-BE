@@ -90,9 +90,9 @@ public class VehicleController {
 
         Member member = ((UserDetailsImpl) userDetails).getMember();
 
-        VehicleDetailResponseDto vehicleDetailResponseDto = vehicleService.readOneVehicleForVehicleUpdatePage(vId, member.getId());
+        VehicleUpdatePageResponseDto vehicleUpdatePageResponseDto = vehicleService.readOneVehicleForVehicleUpdatePage(vId, member.getId());
 
-        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleDetailResponseDto);
+        return CommonResponseDto.success(StatusCode.SUCCESS, vehicleUpdatePageResponseDto);
     }
 
     @ApiOperation(value = "차량 수정")
@@ -122,9 +122,11 @@ public class VehicleController {
 
     @ApiOperation(value = "차량 검색")
     @PostMapping("/search")
-    public CommonResponseDto<?> searchVehicles(@RequestBody VehicleSearch vehicleSearch, HttpServletRequest request) {
+    public CommonResponseDto<?> searchVehicles(@RequestBody VehicleSearch vehicleSearch,
+                                               HttpServletRequest request,
+                                               @PageableDefault(size = 20) Pageable pageable) {
 
-        List<VehicleSearchResponseDto> vehicleSearchResponseDtos = vehicleService.searchVehicles(vehicleSearch, request);
+        Page<VehicleSearchResponseDto> vehicleSearchResponseDtos = vehicleService.searchVehicles(vehicleSearch, request, pageable);
 
         return CommonResponseDto.success(StatusCode.SUCCESS, vehicleSearchResponseDtos);
     }

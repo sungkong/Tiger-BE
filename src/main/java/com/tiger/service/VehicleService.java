@@ -81,10 +81,6 @@ public class VehicleService {
             member = checkUtil.validateMember();
         }
 
-//        List<Vehicle> vehicleList = vehicleRepository.findAllByIsValid(true).orElseThrow(() -> {
-//            throw new CustomException(StatusCode.VEHICLE_NOT_FOUND);
-//        });
-
         Page<Vehicle> vehicleList = vehicleRepository.findAllByIsValid(true, pageable);
 
 
@@ -104,8 +100,6 @@ public class VehicleService {
             vehicleCommonResponseDtos.add(vehicleCommonResponseDto);
 
         }
-
-//        return vehicleCommonResponseDtos;
 
         return new PageImpl(vehicleCommonResponseDtos, vehicleList.getPageable(), vehicleList.getTotalElements());
 
@@ -137,7 +131,7 @@ public class VehicleService {
     }
 
 
-    public VehicleDetailResponseDto readOneVehicleForVehicleUpdatePage(Long vId, Long ownerId) {
+    public VehicleUpdatePageResponseDto readOneVehicleForVehicleUpdatePage(Long vId, Long ownerId) {
 
         Vehicle vehicle = findVehicleByVehicleId(vId);
 
@@ -147,7 +141,7 @@ public class VehicleService {
 
         Member member = findMemberByMemberId(ownerId);
 
-        return new VehicleDetailResponseDto(vehicle, member, null, null);
+        return new VehicleUpdatePageResponseDto(vehicle, member, null, null);
     }
 
 
@@ -229,7 +223,7 @@ public class VehicleService {
     }
 
 
-    public List<VehicleSearchResponseDto> searchVehicles(VehicleSearch vehicleSearch, HttpServletRequest request) {
+    public Page<VehicleSearchResponseDto> searchVehicles(VehicleSearch vehicleSearch, HttpServletRequest request, Pageable pageable) {
 
         Member member = null;
         if (null != request.getHeader("RefreshToken") && null != request.getHeader("Authorization")) {
@@ -243,7 +237,7 @@ public class VehicleService {
         Double locationY = vehicleSearch.getLocationY();
         String type = vehicleSearch.getType();
 
-        List<VehicleCustomResponseDto> vehicleCustomResponseDtos = vehicleCustomRepository.searchVehicle(startDate, endDate, locationX, locationY, type);
+        Page<VehicleCustomResponseDto> vehicleCustomResponseDtos = vehicleCustomRepository.searchVehicle(startDate, endDate, locationX, locationY, type, pageable);
 
         List<VehicleSearchResponseDto> vehicleSearchResponseDtos = new ArrayList<>();
 
@@ -263,7 +257,7 @@ public class VehicleService {
 
         }
 
-        return vehicleSearchResponseDtos;
+        return new PageImpl(vehicleSearchResponseDtos, vehicleCustomResponseDtos.getPageable(), vehicleCustomResponseDtos.getTotalElements());
     }
 
 
