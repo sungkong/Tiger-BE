@@ -1,6 +1,7 @@
 package com.tiger.repository;
 
 import com.querydsl.core.types.ConstantImpl;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tiger.domain.order.QOrders;
@@ -32,6 +33,7 @@ public class OrderCustomRepository {
                     .and(order.status.eq(Status.valueOf(status))))
                 .limit(limit)
                 .offset(offset)
+                .orderBy(orderByStatus(status))
                 .fetch();
     }
 
@@ -200,11 +202,12 @@ public class OrderCustomRepository {
         }
     }
 
-    private StringTemplate toAnyValue(Object object){
-        return Expressions.stringTemplate(
-                "ANY_VALUE({0})",
-                object
-        );
+    private OrderSpecifier<?> orderByStatus(String status){
+        if(status.equals("RETURN")){
+            return order.returnDate.desc();
+        } else {
+            return order.id.desc();
+        }
     }
 
 }
