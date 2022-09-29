@@ -13,9 +13,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +31,7 @@ public class MemberController {
 
     @ApiOperation(value = "회원가입")
     @PostMapping("/register")
-    public CommonResponseDto<?> register(@RequestBody RegisterRequestDto registerRequestDto) {
+    public CommonResponseDto<?> register(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
 
         String name = memberService.register(registerRequestDto);
 
@@ -38,7 +40,7 @@ public class MemberController {
 
     @ApiOperation(value = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
 
         TokenDto token = memberService.login(loginRequestDto);
 

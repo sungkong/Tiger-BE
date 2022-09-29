@@ -16,9 +16,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.Binding;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,8 +38,8 @@ public class VehicleController {
 
     @ApiOperation(value = "차량 등록")
     @PostMapping("/management")
-    public CommonResponseDto<?> createVehicle(@ModelAttribute VehicleRequestDto requestDto,
-                                       @AuthenticationPrincipal UserDetails userDetails) {
+    public CommonResponseDto<?> createVehicle(@ModelAttribute @Valid VehicleRequestDto requestDto,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
 
         Member member = ((UserDetailsImpl) userDetails).getMember();
 
@@ -98,8 +102,8 @@ public class VehicleController {
     @ApiOperation(value = "차량 수정")
     @PutMapping("/management/{vId}")
     public CommonResponseDto<?> updateVehicle(@PathVariable Long vId,
-                                       @ModelAttribute VehicleUpdateRequestDto requestDto,
-                                       @AuthenticationPrincipal UserDetails userDetails) {
+                                              @ModelAttribute @Valid VehicleUpdateRequestDto requestDto,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
 
         Member member = ((UserDetailsImpl) userDetails).getMember();
 
@@ -122,7 +126,7 @@ public class VehicleController {
 
     @ApiOperation(value = "차량 검색")
     @PostMapping("/search")
-    public CommonResponseDto<?> searchVehicles(@RequestBody VehicleSearch vehicleSearch,
+    public CommonResponseDto<?> searchVehicles(@RequestBody @Valid VehicleSearch vehicleSearch,
                                                HttpServletRequest request,
                                                @PageableDefault(size = 6) Pageable pageable) {
 
