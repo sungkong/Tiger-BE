@@ -132,9 +132,7 @@ public class CheckUtil {
             throw new CustomException(EXPIRED_DATE_FORBIDDEN);
         }
         // 주문기간만 포함된 달의 openDate만 가져오기
-        List<OpenDate> openDateList = openDateRepository.findAllByIncludeOrderDateMonth(vehicleId,
-                orderRequestDto.getStartDate(),
-                orderRequestDto.getEndDate()).orElseThrow(
+        List<OpenDate> openDateList = openDateRepository.findAllByVehicleId(vehicleId).orElseThrow(
                 () -> new CustomException(OPENDATE_NOT_FOUND)
         );
         // 상품의 오픈 기간 가져오기
