@@ -53,7 +53,7 @@ class OrderServiceTest {
         OrderRequestDto orderRequestDto = new OrderRequestDto(
                 imp_uid, pay_method, paid_amount, start_date, end_date);
         //when
-        CommonResponseDto<?> result = orderService.order(request, vehicleId, orderRequestDto);
+        CommonResponseDto<?> result = orderService.order(vehicleId, orderRequestDto);
         // 예약 당일 이전 날짜들 예약 막아놓기
         LocalDate now = LocalDate.now();
         if(now.compareTo(orderRequestDto.getStartDate()) < 0){
