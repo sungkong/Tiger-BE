@@ -74,7 +74,7 @@ public class AwsS3Service {
         } catch (StringIndexOutOfBoundsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일(" + fileName + ") 입니다.");
         }
-        if (!Arrays.asList(".jpg", ".png", ".jpeg", ".gif", ".bmp").contains(fileExtension.toLowerCase())) {
+        if (!Arrays.asList(".jpg", ".png", ".jpeg", ".gif", ".bmp", ".jfif").contains(fileExtension.toLowerCase())) {
             throw new CustomException(StatusCode.BAD_IMAGE_INPUT);
         }
         return fileExtension;
