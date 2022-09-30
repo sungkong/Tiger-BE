@@ -93,6 +93,11 @@ public enum StatusCode {
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
     DUPLICATE_ORDERDATE(HttpStatus.CONFLICT, "이미 사용중인 상품이거나 사용할 수 없는 상품입니다."),
+
+    /* 500 : Internal Server Error : 웹 사이트 서버에 문제가 있음을 의미하지만 서버는 정확한 문제에 대해 더 구체적으로 설명할 수 없습니다. */
+    NUMBER_FORMAT_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 형변환 입니다."),
+
+
     ;
 
     private final HttpStatus httpStatus;

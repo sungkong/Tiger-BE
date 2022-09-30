@@ -85,7 +85,9 @@ dependencies {
 
     // AOP
     implementation 'org.springframework.boot:spring-boot-starter-aop'
-
+    // lucy
+    implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.0'
+    implementation 'com.navercorp.lucy:lucy-xss:1.6.3'
 }
 
 // querydsl에서 사용할 경로 설정
