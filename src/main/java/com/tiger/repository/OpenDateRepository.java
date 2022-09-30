@@ -30,4 +30,6 @@ public interface OpenDateRepository extends JpaRepository<OpenDate, Long> {
 
 
     void deleteAllByEndDateIsBefore(LocalDate date);
+
+    Optional<List<OpenDate>> findAllByVehicleId(Long vehicleId);
 }
