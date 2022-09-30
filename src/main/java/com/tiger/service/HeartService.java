@@ -49,7 +49,7 @@ public class HeartService {
     public CommonResponseDto<?> getAllHeartList() {
         Member member = checkUtil.validateMember();
 
-        List<Heart> heartList = heartRepository.findAllByMember(member);
+        List<Heart> heartList = heartRepository.findAllByMemberAndVehicleIsValid(member, true).orElse(null);
         List<VehicleOwnerResponseDto> vehicleResponseDtoList = new ArrayList<>();
         for (Heart heart : heartList) {
             Vehicle vehicle = heart.getVehicle();
