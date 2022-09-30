@@ -15,8 +15,8 @@ echo "현재 구동중인 어플리케이션 pid: $CURRENT_PID"
 if [ -z "$CURRENT_PID" ]; then
     echo "> 현재 구동중인 애플리케이션이 없으므로 종료하지 않습니다."
 else
-    echo "> sudo kill -15 $CURRENT_PID"
-    sudo kill -15 $CURRENT_PID
+    echo "> kill -15 $CURRENT_PID"
+    kill -15 $CURRENT_PID
     sleep 5
 fi
 
@@ -28,12 +28,12 @@ echo "> JAR Name: $JAR_NAME"
 
 echo "> $JAR_NAME 에 실행권한 추가"
 
-sudo chmod +x $JAR_NAME
+chmod +x $JAR_NAME
 
 echo "> $JAR_NAME 실행"
 
 #nohup java -jar $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
 nohup java -Duser.timezone=Asia/Seoul -jar \
-        -Dspring.config.location=classpath:/application.properties,/home/ubuntu/app/deploy/application-hyuk.properties \
+        -Dspring.config.location=classpath:/application.yml,/home/ubuntu/app/deploy/application-hyuk.yml \
         $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
 

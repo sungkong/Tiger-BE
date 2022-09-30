@@ -36,7 +36,7 @@ public class Vehicle extends Timestamped {
 
     // 상품 설명
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String description;
 
     // 상품 주소

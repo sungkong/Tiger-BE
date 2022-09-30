@@ -28,9 +28,6 @@ public interface OpenDateRepository extends JpaRepository<OpenDate, Long> {
     boolean existsByVehicleId(Long vid);
 
 
-    @Query(value = "SELECT *" +
-            "FROM open_date" +
-            "WHERE (DATE_FORMAT(now(), '%Y-%m-%d') >  DATE_FORMAT(end_date, '%Y-%m-%d'))"
-           , nativeQuery = true)
-    Optional<List<OpenDate>> findAllByEndDatePassed();
+
+    void deleteAllByEndDateIsBefore(LocalDate date);
 }
