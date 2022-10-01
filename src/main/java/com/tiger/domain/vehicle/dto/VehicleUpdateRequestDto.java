@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Getter
@@ -15,6 +13,8 @@ import java.util.List;
 public class VehicleUpdateRequestDto {
 
     // 상품 가격
+    @Min(value = 1, message = "최소 가격은 1원입니다.")
+    @Max(value = 1000000, message = "최대 가격은 100만원입니다.")
     @NotNull(message = "가격을 적어주세요.")
     private Integer price;
 
@@ -52,6 +52,7 @@ public class VehicleUpdateRequestDto {
     private String type;
 
     // 차 연식
+    @Min(value = 1990, message = "1990년 이전의 차량은 등록하지 못합니다.")
     @NotBlank(message = "차량의 연식을 입력해주세요.")
     private String years;
 
@@ -60,6 +61,7 @@ public class VehicleUpdateRequestDto {
     private String fuelType;
 
     // 차 탑승객 수
+    @Min(value = 1, message = "차량 탑습인원은 최소 1명이어야 합니다.")
     @NotBlank(message = "차량의 탑승 가능 인원을 입력해주세요.")
     private String passengers;
 
@@ -68,6 +70,7 @@ public class VehicleUpdateRequestDto {
     private String transmission;
 
     // 차 연비
+    @Min(value = 1, message = "차량의 연비는 최소 1이어야 합니다.")
     @NotBlank(message = "차량의 연비를 입력해주세요.")
     private String fuelEfficiency;
 
