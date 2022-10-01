@@ -119,7 +119,7 @@ public class OAuthService {
                 .get("email").asText();
 
         if (email.isEmpty() || email.isBlank()) {
-            email = UUID.randomUUID() + "@taiger.kr";
+            email = generateRandom.email();
         }
 
         return new KakaoUserInfoDto(id, nickname, email, profileImage);
