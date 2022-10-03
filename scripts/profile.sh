@@ -5,13 +5,13 @@
 # 쉬고 있는 profile 찾기: port1이 사용중이면 port2가 쉬고 있고, 반대면 port1이 쉬고 있음
 function find_idle_profile()
 {
-    RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://52.79.109.52/profile)
+    RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/profile)
 
     if [ ${RESPONSE_CODE} -ge 400 ] # 400 보다 크면 (즉, 40x/50x 에러 모두 포함)
     then
         CURRENT_PROFILE=port2 # 에러 발생 시 현재 profile을 real2로 사용
     else
-        CURRENT_PROFILE=$(curl -s http://52.79.109.52/profile)
+        CURRENT_PROFILE=$(curl -s http://localhost/profile)
     fi
 
     if [ ${CURRENT_PROFILE} == port1 ]
