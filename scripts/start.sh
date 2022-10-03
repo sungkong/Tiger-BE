@@ -36,6 +36,10 @@ echo "> $JAR_NAME 실행"
 IDLE_PROFILE=$(find_idle_profile)
 echo "> $JAR_NAME 를 profile=$IDLE_PROFILE 로 실행합니다."
 
+echo "cd $REPOSITORY"
+
+cd $REPOSITORY || exit
+
 
 echo "nohup java -Duser.timezone=Asia/Seoul -jar \
               -Dspring.profiles.active=$IDLE_PROFILE \
