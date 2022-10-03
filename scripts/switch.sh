@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 ABSPATH=$(readlink -f $0)
+echo "${ABSPATH}"
 ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
-
+echo "12321: ${ABSDIR}"
 function switch_proxy() {
     IDLE_PORT=$(find_idle_port)
 

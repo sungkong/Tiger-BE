@@ -3,12 +3,12 @@ ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
 
-REPOSITORY=/home/ubuntu/app/step
+REPOSITORY=/home/ubuntu/app/step/zip
 PROJECT_NAME=Tiger
 
 echo "> Build 파일 복사"
 
-cp $REPOSITORY/zip/*.jar $REPOSITORY/
+cp $REPOSITORY/*.jar $REPOSITORY/
 
 #echo "> 현재 구동중인 애플리케이션 pid 확인"
 #
@@ -38,10 +38,10 @@ echo "> $JAR_NAME 를 profile=$IDLE_PROFILE 로 실행합니다."
 
 
 echo "nohup java -Duser.timezone=Asia/Seoul -jar \
-              -Dspring.profiles.active=-$IDLE_PROFILE.yml \
+              -Dspring.profiles.active=$IDLE_PROFILE \
               $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &"
 #nohup java -jar $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
 nohup java -Duser.timezone=Asia/Seoul -jar \
-        -Dspring.profiles.active=-$IDLE_PROFILE.yml \
+        -Dspring.profiles.active=$IDLE_PROFILE\
         $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
 
