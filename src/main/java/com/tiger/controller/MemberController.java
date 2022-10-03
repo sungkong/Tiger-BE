@@ -72,6 +72,10 @@ public class MemberController {
     @PostMapping("/emailCheck")
     public CommonResponseDto<?> emailCheck(@RequestBody EmailCheckRequestDto emailCheckRequestDto) {
 
+        if (emailCheckRequestDto.getEmail().isBlank() || emailCheckRequestDto.getEmail().isEmpty()) {
+            return CommonResponseDto.fail(StatusCode.INVALID_EMAIL);
+        }
+
         boolean result = memberService.emailCheck(emailCheckRequestDto);
 
         if (result) {
