@@ -118,6 +118,10 @@ public class OAuthService {
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
 
+        if (email.isEmpty() || email.isBlank()) {
+            email = generateRandom.email();
+        }
+
         return new KakaoUserInfoDto(id, nickname, email, profileImage);
     }
 

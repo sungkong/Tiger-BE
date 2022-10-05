@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/api/member/**").permitAll()
                 .antMatchers("/user/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/profile","/health").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/vehicle/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/vehicle/search").permitAll()
 

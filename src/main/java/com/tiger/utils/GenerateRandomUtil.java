@@ -13,6 +13,9 @@ public class GenerateRandomUtil {
         return "050" + a + b;
     }
 
+    public String email() {
+        return ((int) ((Math.random() * (99999999 - 10000000 + 1)) + 10000000)) + "@taiger.kr";
+    }
 
 
 

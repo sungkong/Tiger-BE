@@ -1,6 +1,13 @@
 spring:
-#  config:
-#    activate:
-#      on-profile: real1
   profiles:
-    active: junwoo, sungwoo, hyuk, logback
+    active: port1
+server:
+  port: 8081
+
+---
+spring:
+  profiles:
+    active: port2
+server:
+  port: 8082
+
