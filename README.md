@@ -26,35 +26,17 @@
 ## ERD
 ![ERD (1)](https://user-images.githubusercontent.com/73283404/194310791-32d872c1-6494-480f-90d2-c2922a8ba9bd.png)
 
-## 주요기능 🛠
-<div align=center> 
-<img src="https://img.shields.io/badge/React-F7DF1E?style=for-the-badge&logo=react&logoColor=#3776AB"/>
-<img src="https://img.shields.io/badge/Styled_Components-000000?style=for-the-badge&logo=react&logoColor=#3776AB"/>
-<img src="https://img.shields.io/badge/Redux/Toolkit-61DAFB?style=for-the-badge&logo=redux&logoColor=#CA4245"/>
-<img src="https://img.shields.io/badge/ReactRouter-F7DF1E?style=for-the-badge&logo=redux&logoColor=#764ABC"/>
-<img src="https://img.shields.io/badge/Axios-000000?style=for-the-badge&logo=axios&logoColor=#3776AB"/>
-<img src="https://img.shields.io/badge/Javascript-red?style=for-the-badge&logo=javascript&logoColor=black"/>
-<img src="https://img.shields.io/badge/HTML5-008000?style=for-the-badge&logo=HTML5&logoColor=#E34F26"/>
-<img src="https://img.shields.io/badge/CSS3-blue?style=for-the-badge&logo=css3&logoColor=#1572B6"/>
-<img src="https://img.shields.io/badge/Sock.js-black?style=for-the-badge&logo=socket.io&logoColor=#1572B6"/>
-<img src="https://img.shields.io/badge/STOMP-61DAFB?style=for-the-badge&logo=stomp&logoColor=#CA4245"/>
-<img src="https://img.shields.io/badge/Chart.js-F7DF1E?style=for-the-badge&logo=chart.js&logoColor=#4287f5"/>
-<img src="https://img.shields.io/badge/AWS.S3-red?style=for-the-badge&logo=AWS&logoColor=#32a852"/>
-<img src="https://img.shields.io/badge/AWS.CLOUDFRONT-000000?style=for-the-badge&logo=CLOUDFRONT&logoColor=#3776AB"/>
-<img src="https://img.shields.io/badge/Kakao.Map-blue?style=for-the-badge&logo=kakao&logoColor=#1572B6"/>
-</div>
-
-## 🛠 그 외 라이브러리
+## 🛠 개발환경
 - SpringBoot 2.7.3
-- MySql
-- Gradle
+- MySql 8.0.28
+- Gradle 7.4
 - AWS EC2
 - AWS RDS
 - AWS Route53
 - AWS CodeDeploy
 - TravisCI
 - Nginx
-- WebSocketr
+- WebSocket
 - STOMP
 
 ## ❗ 핵심기능
