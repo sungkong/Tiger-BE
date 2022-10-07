@@ -185,7 +185,7 @@ public class VehicleService {
 
         List<String> removeList = requestDto.getRemoveList();
 
-        if (!removeList.isEmpty()) {
+        if (removeList != null) {
             for (String imageUrl : removeList) {
                 String key = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
                 awsS3Service.deleteFile(key);
@@ -195,7 +195,7 @@ public class VehicleService {
 
         List<MultipartFile> multipartFiles = requestDto.getImageList();
 
-        if (!multipartFiles.isEmpty()) {
+        if (multipartFiles != null) {
             List<String> imageUrlList = awsS3Service.uploadFile(multipartFiles);
             saveVehicleImages(imageUrlList, vehicle);
         }

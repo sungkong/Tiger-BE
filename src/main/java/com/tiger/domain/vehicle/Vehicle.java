@@ -3,7 +3,6 @@ package com.tiger.domain.vehicle;
 
 import com.tiger.domain.Timestamped;
 import com.tiger.domain.order.Orders;
-import com.tiger.domain.vehicle.dto.VehicleRequestDto;
 import com.tiger.domain.vehicle.dto.VehicleUpdateRequestDto;
 import com.tiger.domain.vehicle.heart.Heart;
 import lombok.AllArgsConstructor;
@@ -112,6 +111,8 @@ public class Vehicle extends Timestamped {
         this.price = requestDto.getPrice();
         this.description = requestDto.getDescription();
         this.location = requestDto.getLocation();
+        this.locationX = requestDto.getLocationX();
+        this.locationY = requestDto.getLocationY();
         this.vbrand = requestDto.getVbrand();
         this.vname = requestDto.getVname();
         this.type = requestDto.getType();
