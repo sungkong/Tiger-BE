@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,13 +48,15 @@ public class AwsS3Service {
 
                 BufferedImage image = resizeImage(file, IMAGE_WIDTH);
 
+                BufferedImage removeImage = removeAlphaChannel(image);
+
 
                 ObjectMetadata objectMetadata = new ObjectMetadata();
                 String contentType = file.getContentType();
                 objectMetadata.setContentLength(file.getSize());
                 objectMetadata.setContentType(file.getContentType());
 
-                ByteArrayInputStream inputStream = imageToInputStream(image, contentType, objectMetadata);
+                ByteArrayInputStream inputStream = imageToInputStream(removeImage, contentType, objectMetadata);
 
                 amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
@@ -119,5 +122,28 @@ public class AwsS3Service {
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
+    private static BufferedImage removeAlphaChannel(BufferedImage img) {
+        if (!img.getColorModel().hasAlpha()) {
+            return img;
+        }
+
+        BufferedImage target = createImage(img.getWidth(), img.getHeight(), false);
+        Graphics2D g = target.createGraphics();
+        // g.setColor(new Color(color, false));
+        g.fillRect(0, 0, img.getWidth(), img.getHeight());
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+
+        return target;
+    }
+
+    private static BufferedImage createImage(int width, int height, boolean hasAlpha) {
+        return new BufferedImage(width, height, hasAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
+    }
+
 
 }
+
+
+
+
