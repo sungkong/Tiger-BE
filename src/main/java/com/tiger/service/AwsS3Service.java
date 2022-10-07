@@ -8,14 +8,19 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.tiger.exception.CustomException;
 import com.tiger.exception.StatusCode;
 import lombok.RequiredArgsConstructor;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +33,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AwsS3Service {
-
+    private static final int IMAGE_WIDTH = 800;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -38,22 +43,31 @@ public class AwsS3Service {
         List<String> fileUrlList = new ArrayList<>();
 
         multipartFile.forEach(file -> {
-            String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
+            try {
+                String fileName = createFileName(file.getOriginalFilename());
 
-            try(InputStream inputStream = file.getInputStream()) {
+                BufferedImage image = resizeImage(file, IMAGE_WIDTH);
+
+                BufferedImage removeImage = removeAlphaChannel(image);
+
+
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                String contentType = file.getContentType();
+                objectMetadata.setContentLength(file.getSize());
+                objectMetadata.setContentType(file.getContentType());
+
+                ByteArrayInputStream inputStream = imageToInputStream(removeImage, contentType, objectMetadata);
+
                 amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
-            } catch(IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+
+                String url = amazonS3Client.getUrl(bucket, fileName).toString();
+
+                fileUrlList.add(url);
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-
-            String url = amazonS3Client.getUrl(bucket, fileName).toString();
-
-            fileUrlList.add(url);
-
         });
 
         return fileUrlList;
@@ -79,4 +93,57 @@ public class AwsS3Service {
         }
         return fileExtension;
     }
+
+    // image resize
+    private BufferedImage resizeImage(MultipartFile multipartFile, int targetWidth) throws IOException {
+        BufferedImage bufferedImage = ImageIO.read(multipartFile.getInputStream());
+
+        if (bufferedImage == null) {
+            throw new CustomException(StatusCode.BAD_IMAGE_INPUT);
+        }
+
+        if (bufferedImage.getWidth() < targetWidth) {
+            return bufferedImage;
+        }
+
+        return Scalr.resize(bufferedImage, targetWidth);
+    }
+
+    // image to InputStream
+    private ByteArrayInputStream imageToInputStream(BufferedImage bufferedImage, String contentType, ObjectMetadata objectMetadata) throws IOException {
+        String fileExtension = contentType.split("/")[1];
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, fileExtension, byteArrayOutputStream);
+
+        objectMetadata.setContentType(contentType);
+        objectMetadata.setContentLength(byteArrayOutputStream.size());
+
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+    }
+
+    private static BufferedImage removeAlphaChannel(BufferedImage img) {
+        if (!img.getColorModel().hasAlpha()) {
+            return img;
+        }
+
+        BufferedImage target = createImage(img.getWidth(), img.getHeight(), false);
+        Graphics2D g = target.createGraphics();
+        // g.setColor(new Color(color, false));
+        g.fillRect(0, 0, img.getWidth(), img.getHeight());
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+
+        return target;
+    }
+
+    private static BufferedImage createImage(int width, int height, boolean hasAlpha) {
+        return new BufferedImage(width, height, hasAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
+    }
+
+
 }
+
+
+
+
